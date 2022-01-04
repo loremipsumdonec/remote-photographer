@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  remote-photographer-message-broker:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 15672:15672
+      - 5672:5672
+      
+  remote-photographer-storage:
+    image: "mongo"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=ChasingASharkRunningOnTheLandInTheYear1978
+    ports:
+      - 27017:27017
