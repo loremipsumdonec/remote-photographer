@@ -43,7 +43,7 @@ public abstract class TemplateServiceEngine
             return;
         }
 
-        StartDistributedService();
+        //StartDistributedService();
         Services.GetService(typeof(ICommandDispatcher));
 
         Started = true;
@@ -56,7 +56,7 @@ public abstract class TemplateServiceEngine
             return;
         }
 
-        StopDistributedService();
+        //StopDistributedService();
         Started = false;
     }
 

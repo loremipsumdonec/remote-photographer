@@ -1,15 +1,54 @@
-﻿using Xunit;
+﻿using System;
+using System.Linq;
+using Boilerplate.Features.Core.Commands;
+using Boilerplate.Features.Core.Queries;
+using RemotePhotographer.Features.Gphoto2.InteropServices;
+using RemotePhotographer.Features.Gphoto2.Services;
+using RemotePhotographer.Features.Photographer.Commands;
+using RemotePhotographer.Features.Photographer.Queries;
+using RemotePhotographerTest.Services;
+using Xunit;
 
 namespace RemotePhotographerTest.SUT.Features.Templates
 {
-    [Trait("type", "Exploratory")]
+    [Collection("TemplateEngineForSmokeTests"), Trait("type", "Integration")]
     public class IntegrationTests
     {
-        [Fact]
-        [Trait("severity", "Critical")]
-        public void LoremDonec() 
+        public IntegrationTests(TemplateServiceEngineForSmoke engine)
         {
-            Assert.True(true);
+            Fixture = new TemplateServiceFixture(engine, "sv");
+        }
+
+        public TemplateServiceFixture Fixture { get; set; }
+
+        [Fact]
+        public async void GetCameras_WhenCameraAvailable_HasACamera() 
+        {
+            var dispatcher = Fixture.GetService<IQueryDispatcher>();
+            var model = await dispatcher.DispatchAsync<GetCamerasModel>(new GetCameras());
+
+            Assert.Single(model.Cameras);
+        }
+
+        [Fact]
+        public async void GetCameras_WhenCameraAvailable_CameraHasExpectedName() 
+        {
+            string expected = "Canon EOS 450D (PTP mode)";
+            
+
+            var dispatcher = Fixture.GetService<IQueryDispatcher>();
+            var model = await dispatcher.DispatchAsync<GetCamerasModel>(new GetCameras());
+
+            Assert.Equal(expected, model.Cameras.First().Name);
+        }
+
+        [Fact]
+        public async void ConnectCamera_WhenCameraAvailable_CameraManagerHasCameraContext() 
+        {
+            var dispatcher = Fixture.GetService<ICommandDispatcher>();
+            await dispatcher.DispatchAsync(new ConnectCamera());
+            await dispatcher.DispatchAsync(new CaptureImage());
+            await dispatcher.DispatchAsync(new DisconnectCamera());
         }
     }
 }

@@ -29,7 +29,7 @@ namespace RemotePhotographerTest.Services
                 ));
             }
 
-            Clear();
+            //Clear();
         }
 
         private void Clear()
