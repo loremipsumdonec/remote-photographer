@@ -2,7 +2,7 @@ using Boilerplate.Features.Core.Commands;
 
 namespace RemotePhotographer.Features.Photographer.Commands;
 
-public class CaptureImage
+public class SetISO
     : Command
 {
 }

@@ -1,6 +1,9 @@
+using Boilerplate.Features.Core;
+
 namespace RemotePhotographer.Features.Photographer.Models;
 
-public class Camera 
+public class Camera
+    : IModel
 {
     public Camera(string name, string portName)
     {

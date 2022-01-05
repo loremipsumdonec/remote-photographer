@@ -41,7 +41,7 @@ public class CameraService
     public static extern int gp_camera_set_port_info(IntPtr camera, IntPtr info);
 
     [DllImport("gphoto2", CallingConvention=CallingConvention.Cdecl, CharSet=CharSet.Ansi)]
-    public static extern int gp_camera_get_single_config(IntPtr camera, [MarshalAs(UnmanagedType.LPStr)] string name, out IntPtr widget, IntPtr context);
+    public static extern int gp_camera_get_single_config(IntPtr camera, [MarshalAs(UnmanagedType.LPStr)] string name, out IntPtr cameraWidget, IntPtr context);
 
     [DllImport("gphoto2", CallingConvention=CallingConvention.Cdecl, CharSet=CharSet.Ansi)]
     public static extern int gp_camera_set_single_config(IntPtr camera, [MarshalAs(UnmanagedType.LPStr)] string name, IntPtr widget, IntPtr context);
