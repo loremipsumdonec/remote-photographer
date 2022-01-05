@@ -4,10 +4,10 @@ using System.Runtime.InteropServices;
 
 namespace RemotePhotographerTest.Services;
 
-public class TemplateServiceEngineForSmoke
-    : TemplateServiceEngine
+public class RemotePhotographerEngineForSmoke
+    : RemotePhotographerEngine
 {
-    public TemplateServiceEngineForSmoke()
+    public RemotePhotographerEngineForSmoke()
         : base()
     {
     }

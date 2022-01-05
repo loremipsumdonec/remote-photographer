@@ -24,8 +24,4 @@
 		<ProjectReference Include="..\Boilerplate\Boilerplate.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="Features\Templates\Commands\" />
-	</ItemGroup>
-
 </Project>

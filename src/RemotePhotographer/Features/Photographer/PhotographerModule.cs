@@ -1,7 +1,4 @@
-using RemotePhotographer.Features.Templates.Services;
 using Autofac;
-using Boilerplate.Features.Core.Config;
-using RemotePhotographer.Features.Photographer.Services;
 
 namespace RemotePhotographer.Features.Photographer;
 
@@ -16,14 +13,6 @@ public class PhotographerModule
     public IConfiguration Configuration { get; }
 
     protected override void Load(ContainerBuilder builder)
-    {
-        builder.RegisterFromAs<ICameraService>(
-                "photographer.camera.service",
-                Configuration
-        ).InstancePerLifetimeScope();
-    }
-
-    private void ValidateConfiguration() 
     {
     }
 }

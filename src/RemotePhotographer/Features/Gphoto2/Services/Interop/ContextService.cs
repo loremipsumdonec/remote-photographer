@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace RemotePhotographer.Features.Gphoto2.InteropServices;
+namespace RemotePhotographer.Features.Gphoto2.Services.Interop;
 
 public class ContextService 
 {

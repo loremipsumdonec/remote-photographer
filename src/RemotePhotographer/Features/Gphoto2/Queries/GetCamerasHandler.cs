@@ -1,6 +1,6 @@
 using Boilerplate.Features.Core;
 using Boilerplate.Features.Core.Queries;
-using RemotePhotographer.Features.Gphoto2.InteropServices;
+using RemotePhotographer.Features.Gphoto2.Services.Interop;
 using RemotePhotographer.Features.Photographer.Models;
 using RemotePhotographer.Features.Photographer.Queries;
 using System.Runtime.InteropServices;

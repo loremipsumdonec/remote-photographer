@@ -1,6 +1,3 @@
-using RemotePhotographer.Features.Templates;
-using RemotePhotographer.Features.Templates.Events;
-using RemotePhotographer.Features.Templates.Schema;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Boilerplate.Features.Core;
@@ -24,7 +21,6 @@ builder.Host.ConfigureContainer((ContainerBuilder containerBuilder) =>
     containerBuilder.RegisterModule(new CoreModule(builder.Configuration, assemblies));
     containerBuilder.RegisterModule(new MapperModule(builder.Configuration, assemblies));
     containerBuilder.RegisterModule(new ReactiveModule(builder.Configuration, assemblies));
-    containerBuilder.RegisterModule(new PhotographerModule(builder.Configuration));
     containerBuilder.RegisterModule(new Gphoto2Module(builder.Configuration));    
 });
 
@@ -68,32 +64,7 @@ app.UseEndpoints(endpoints =>
     //endpoints.MapGraphQL();
 });
 
-app.MapGet("/", () =>  { 
-
-/*
-    var context = ContextService.gp_context_new();
-    var status = ListService.gp_port_info_list_new(out IntPtr list);
-
-    status = ListService.gp_port_info_list_load(list);
-    int numberOf = ListService.gp_port_info_list_count(list);
-
-    List<string> names = new();
-
-    for(int index = 0; index < numberOf; index++) 
-    {
-        status = ListService.gp_port_info_list_get_info(list, index, out IntPtr info);
-        var r = PortInfoListService.gp_port_info_get_name(info, out IntPtr name);
-
-        if(r == 0) 
-        {
-            names.Add(Marshal.PtrToStringAnsi(name));
-        }
-        
-    }
-    
-    ListService.gp_port_info_list_free(list);
-    */
-});
+app.MapGet("/", () =>  "Hello");
 
 app.Run();
 

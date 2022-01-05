@@ -1,6 +1,6 @@
 using Boilerplate.Features.Core;
 using Boilerplate.Features.Core.Commands;
-using RemotePhotographer.Features.Gphoto2.InteropServices;
+using RemotePhotographer.Features.Gphoto2.Services.Interop;
 using RemotePhotographer.Features.Gphoto2.Services;
 using RemotePhotographer.Features.Photographer.Commands;
 

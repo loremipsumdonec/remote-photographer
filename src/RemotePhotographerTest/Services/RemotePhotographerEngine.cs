@@ -7,12 +7,12 @@ using System.IO;
 
 namespace RemotePhotographerTest.Services;
 
-public abstract class TemplateServiceEngine
+public abstract class RemotePhotographerEngine
     : WebApplicationFactory<Program>
 {
     private readonly DistributedServiceEngine _distributedServiceEngine;
 
-    public TemplateServiceEngine() 
+    public RemotePhotographerEngine() 
     {
         _distributedServiceEngine = CreateDistributedServiceEngine();
     }

@@ -4,10 +4,10 @@ using System.Runtime.InteropServices;
 
 namespace RemotePhotographerTest.Services;
 
-public class TemplateServiceEngineForExploratory
-    : TemplateServiceEngine
+public class RemotePhotographerEngineForExploratory
+    : RemotePhotographerEngine
 {
-    public TemplateServiceEngineForExploratory()
+    public RemotePhotographerEngineForExploratory()
         : base()
     {
         ForExploratory = true;

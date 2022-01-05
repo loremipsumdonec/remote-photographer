@@ -2,7 +2,7 @@
 using System;
 using Xunit;
 
-namespace RemotePhotographerTest.SUT.Episerver.Features.Core
+namespace RemotePhotographerTest.SUT.Features.Core
 {
     [Trait("type", "Unit")]
     public class NamingConventions

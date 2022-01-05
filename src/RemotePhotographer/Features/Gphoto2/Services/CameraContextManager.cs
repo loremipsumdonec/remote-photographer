@@ -1,4 +1,4 @@
-using RemotePhotographer.Features.Gphoto2.InteropServices;
+using RemotePhotographer.Features.Gphoto2.Services.Interop;
 using RemotePhotographer.Features.Gphoto2.Models;
 
 namespace RemotePhotographer.Features.Gphoto2.Services;
