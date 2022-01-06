@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RemotePhotographer", "Remot
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boilerplate", "Boilerplate\Boilerplate.csproj", "{F54CBF65-3910-4373-BF14-5EF3E052A6DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemotePhotographerMigration", "RemotePhotographerMigration\RemotePhotographerMigration.csproj", "{CF3B7FFD-59FB-4C1E-9EAC-6D1911D54972}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RemotePhotographerMigration", "RemotePhotographerMigration\RemotePhotographerMigration.csproj", "{CF3B7FFD-59FB-4C1E-9EAC-6D1911D54972}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,7 +20,6 @@ Global
 		{7A3626FF-F136-4077-9E20-6C9E2CF6536F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7A3626FF-F136-4077-9E20-6C9E2CF6536F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A3626FF-F136-4077-9E20-6C9E2CF6536F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7A3626FF-F136-4077-9E20-6C9E2CF6536F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BF7F98AC-D943-4D4C-B58C-609051E69093}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BF7F98AC-D943-4D4C-B58C-609051E69093}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF7F98AC-D943-4D4C-B58C-609051E69093}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -32,7 +31,6 @@ Global
 		{CF3B7FFD-59FB-4C1E-9EAC-6D1911D54972}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CF3B7FFD-59FB-4C1E-9EAC-6D1911D54972}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF3B7FFD-59FB-4C1E-9EAC-6D1911D54972}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF3B7FFD-59FB-4C1E-9EAC-6D1911D54972}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
