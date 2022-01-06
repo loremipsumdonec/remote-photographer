@@ -1,4 +1,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
+RUN apk add libgphoto2-dev
+
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://*:8080  
 
