@@ -143,29 +143,30 @@ namespace RemotePhotographerTest.SUT.Features.Gphoto2
         [Fact]
         public async void Lorem() 
         {
-            var dispatcher = Fixture.GetService<ICommandDispatcher>();
-            var manager = Fixture.GetService<ICameraContextManager>();
-            var service = Fixture.GetService<IModelService>();
+            int takePhotos = 4;
 
-            await dispatcher.DispatchAsync(new ConnectCamera());
+            var commandDispatcher = Fixture.GetService<ICommandDispatcher>();
+            var queryDispatcher = Fixture.GetService<IQueryDispatcher>();
 
-            var isoStatus = CameraService.gp_camera_get_single_config(
-                manager.CameraContext.Camera, "iso", out IntPtr isoWidget, manager.CameraContext.Context
-            );
+            await commandDispatcher.DispatchAsync(new ConnectCamera());
 
-            var apertureStatus = CameraService.gp_camera_get_single_config(
-                manager.CameraContext.Camera, "aperture", out IntPtr apertureWidget, manager.CameraContext.Context
-            );
+            var shutterSpeed = await queryDispatcher.DispatchAsync<ShutterSpeed>(new GetShutterSpeed());
+            var newShutterSpeed = shutterSpeed.Values.PickRandom();
 
-            var shutterSpeedStatus = CameraService.gp_camera_get_single_config(
-                manager.CameraContext.Camera, "shutterspeed", out IntPtr shutterSpeedWidget, manager.CameraContext.Context
-            );
+            await commandDispatcher.DispatchAsync(new SetShutterSpeed(newShutterSpeed));
 
-            var iso = await service.CreateModelAsync<ISO>(isoWidget);
-            var aperture = await service.CreateModelAsync<Aperture>(apertureWidget);
-            var shutterSpeed = await service.CreateModelAsync<ShutterSpeed>(shutterSpeedWidget);
+            var iso = await queryDispatcher.DispatchAsync<ISO>(new GetISO());
+            var newISO = iso.Values.Skip(1).PickRandom();
 
-            await dispatcher.DispatchAsync(new DisconnectCamera());
+            await commandDispatcher.DispatchAsync(new SetISO(newISO));
+
+            for(int index = 0; index < takePhotos; index++) 
+            {
+                await commandDispatcher.DispatchAsync(new CaptureImage());
+            }
+            
+
+            await commandDispatcher.DispatchAsync(new DisconnectCamera());
         }
     }
 }
