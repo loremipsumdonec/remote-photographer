@@ -6,10 +6,13 @@ services:
       - 15672:15672
       - 5672:5672
       
-  remote-photographer-storage:
-    image: "mongo"
+  remote-photographer-service:
+    image: loremdonecipsum/remote-photographer:alpha
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=ChasingASharkRunningOnTheLandInTheYear1978
+      - ASPNETCORE_ENVIRONMENT=Production
+      - message.broker-service:parameters:host=localhost
+      - message.broker-service:parameters:username=guest
+      - message.broker-service:parameters:password=guest
+      - message.broker-service:parameters:receive.endpoint=RemotePhotographer
     ports:
-      - 27017:27017
+      - 8080:8080
