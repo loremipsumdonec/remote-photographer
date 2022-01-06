@@ -43,7 +43,7 @@ public abstract class RemotePhotographerEngine
             return;
         }
 
-        //StartDistributedService();
+        StartDistributedService();
         Services.GetService(typeof(ICommandDispatcher));
 
         Started = true;
@@ -56,7 +56,7 @@ public abstract class RemotePhotographerEngine
             return;
         }
 
-        //StopDistributedService();
+        StopDistributedService();
         Started = false;
     }
 
@@ -67,6 +67,11 @@ public abstract class RemotePhotographerEngine
 
     public virtual void StartDistributedService()
     {
+        if(_distributedServiceEngine == null)
+        {
+            return;
+        }
+
         _distributedServiceEngine.StartAsync()
             .GetAwaiter()
             .GetResult();
@@ -74,6 +79,11 @@ public abstract class RemotePhotographerEngine
 
     public virtual void StopDistributedService()
     {
+        if (_distributedServiceEngine == null)
+        {
+            return;
+        }
+
         _distributedServiceEngine.StopAsync()
             .GetAwaiter()
             .GetResult();
@@ -81,7 +91,7 @@ public abstract class RemotePhotographerEngine
 
     protected abstract DistributedServiceEngine CreateDistributedServiceEngine();
 
-    protected IConfiguration GetConfiguration()
+    protected virtual IConfiguration GetConfiguration()
     {
         return new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())

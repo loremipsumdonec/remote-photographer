@@ -9,16 +9,14 @@ namespace Boilerplate.Features.MassTransit.Services
     {
         private readonly IEventHub _decorated;
         private readonly IPublishEndpoint _endpoint;
-        private readonly IBusControl _bus;
 
         public MassTransitEventHub(
             IEventHub decorated, 
-            IPublishEndpoint endpoint,
-            IBusControl bus)
+            IPublishEndpoint endpoint
+        )
         {
             _decorated = decorated;
             _endpoint = endpoint;
-            _bus = bus;
         }
 
         public bool IsOpen => _decorated.IsOpen;
@@ -26,7 +24,6 @@ namespace Boilerplate.Features.MassTransit.Services
         public void Close()
         {
             _decorated.Close();
-            _bus.Stop();
         }
 
         public void Connect(Action<IObservable<IEvent>> connect)
@@ -43,6 +40,11 @@ namespace Boilerplate.Features.MassTransit.Services
         {
             if(IsNotAConsumedEvent(@event)) 
             {
+                if(!IsOpen)
+                {
+                    return;
+                }
+
                 _endpoint.Publish(@event, @event.GetType());
             }
 
@@ -57,7 +59,6 @@ namespace Boilerplate.Features.MassTransit.Services
         public void Open()
         {
             _decorated.Open();
-            _bus.Start();
         }
     }
 }

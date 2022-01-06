@@ -6,11 +6,11 @@ using Boilerplate.Features.MassTransit.Services;
 using Boilerplate.Features.Reactive.Reactive;
 using MassTransit;
 using System.Reflection;
-using RemotePhotographer.Features.Photographer;
 using RemotePhotographer.Features.Gphoto2;
 using RemotePhotographer.Features.Photographer.Schema;
 using RemotePhotographer.Features.Photographer.Queries;
 using RemotePhotographer.Features.Photographer.Commands;
+using Boilerplate.Features.MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -24,6 +24,7 @@ builder.Host.ConfigureContainer((ContainerBuilder containerBuilder) =>
     containerBuilder.RegisterModule(new CoreModule(builder.Configuration, assemblies));
     containerBuilder.RegisterModule(new MapperModule(builder.Configuration, assemblies));
     containerBuilder.RegisterModule(new ReactiveModule(builder.Configuration, assemblies));
+    containerBuilder.RegisterModule(new MassTransitModule(builder.Configuration, assemblies));
     containerBuilder.RegisterModule(new Gphoto2Module(builder.Configuration));    
 });
 
@@ -66,7 +67,9 @@ builder.Services.AddMassTransit(x =>
             e.ConfigureConsumers(context);
         });
     });
-});
+}).AddMassTransitHostedService();
+
+builder.Services.AddGenericRequestClient();
 
 var app = builder.Build();
 app.UseRouting();

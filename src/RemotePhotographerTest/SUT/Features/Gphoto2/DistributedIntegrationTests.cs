@@ -1,6 +1,4 @@
 using System.Linq;
-using Boilerplate.Features.Core.Commands;
-using Boilerplate.Features.Core.Queries;
 using RemotePhotographer.Features.Photographer.Commands;
 using RemotePhotographer.Features.Photographer.Queries;
 using RemotePhotographerTest.Services;
@@ -11,11 +9,11 @@ using Boilerplate.Features.MassTransit.Services;
 
 namespace RemotePhotographerTest.SUT.Features.Gphoto2
 {
-    [Collection("RemotePhotographerEngineWithConnectCameraForIntegration"), 
+    [Collection("RemotePhotographerEngineForIntegration"), 
         Trait("type", "Integration")]
-    public class IntegrationTests
+    public class DistributedIntegrationTests
     {
-        public IntegrationTests(RemotePhotographerEngineWithConnectCameraForIntegration engine)
+        public DistributedIntegrationTests(RemotePhotographerEngineForIntegration engine)
         {
             Fixture = new PhotographerFixture(engine);
         }
@@ -25,7 +23,7 @@ namespace RemotePhotographerTest.SUT.Features.Gphoto2
         [Fact]
         public async void GetCameras_WhenCameraAvailable_HasACamera()
         {
-            var dispatcher = Fixture.GetService<IQueryDispatcher>();
+            var dispatcher = Fixture.GetService<IDistributedQueryDispatcher>();
             var model = await dispatcher.DispatchAsync<GetCamerasModel>(new GetCameras());
 
             Assert.Single(model.Cameras);
@@ -36,7 +34,7 @@ namespace RemotePhotographerTest.SUT.Features.Gphoto2
         {
             string expected = "Canon EOS 450D (PTP mode)";
 
-            var dispatcher = Fixture.GetService<IQueryDispatcher>();
+            var dispatcher = Fixture.GetService<IDistributedQueryDispatcher>();
             var model = await dispatcher.DispatchAsync<GetCamerasModel>(new GetCameras());
 
             Assert.Equal(expected, model.Cameras.First().Name);
@@ -46,7 +44,7 @@ namespace RemotePhotographerTest.SUT.Features.Gphoto2
         public async void CameraContextManager_WhenCameraAvailable_HasCameraContext()
         {
             var cameraContextManager = Fixture.GetService<ICameraContextManager>();
-            var dispatcher = Fixture.GetService<ICommandDispatcher>();
+            var dispatcher = Fixture.GetService<IDistributedCommandDispatcher>();
 
             await dispatcher.DispatchAsync(new ConnectCamera());
             Assert.NotNull(cameraContextManager.CameraContext);
