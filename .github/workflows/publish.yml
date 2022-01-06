@@ -33,7 +33,10 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: copy dockerfile
-      run: cp ./src/RemotePhotographer/Dockerfile Dockerfile
+      run: cp ./src/RemotePhotographer/Dockerfile ./Dockerfile
+
+    - name: list files
+      run: ls -l
 
     - name: build and publish image
       id: docker_build
