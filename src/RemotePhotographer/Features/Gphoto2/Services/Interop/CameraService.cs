@@ -27,10 +27,16 @@ public class CameraService
     public static extern int gp_camera_wait_for_event(IntPtr camera, int timeout, out IntPtr eventtype, out IntPtr eventdata, IntPtr context);
 
     [DllImport("gphoto2")]
-    public static extern int gp_camera_file_get(IntPtr camera,sbyte[] folder,sbyte[] filename, short type, IntPtr camera_file, IntPtr context);
+    public static extern int gp_camera_file_get(IntPtr camera,sbyte[] folder, sbyte[] filename, short type, IntPtr camera_file, IntPtr context);
 
     [DllImport("gphoto2")]
     public static extern int gp_camera_file_delete(IntPtr camera, sbyte[] folder, sbyte[] filename, IntPtr context);
+
+    [DllImport("gphoto2")]
+    public static extern int gp_camera_folder_list_files(IntPtr camera, sbyte[] folder, IntPtr list, IntPtr context);
+
+    [DllImport("gphoto2")]
+    public static extern int gp_camera_folder_list_folders(IntPtr camera, sbyte[] folder, IntPtr list, IntPtr context);
 
     [DllImport("gphoto2")]
     public static extern int gp_camera_autodetect(IntPtr list, IntPtr context);
@@ -49,4 +55,6 @@ public class CameraService
 
     [DllImport("gphoto2")]
     public static extern int gp_camera_get_config(IntPtr camera, out IntPtr window, IntPtr context);
+
+
 }

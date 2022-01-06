@@ -8,6 +8,9 @@ using MassTransit;
 using System.Reflection;
 using RemotePhotographer.Features.Photographer;
 using RemotePhotographer.Features.Gphoto2;
+using RemotePhotographer.Features.Photographer.Schema;
+using RemotePhotographer.Features.Photographer.Queries;
+using RemotePhotographer.Features.Photographer.Commands;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -24,19 +27,29 @@ builder.Host.ConfigureContainer((ContainerBuilder containerBuilder) =>
     containerBuilder.RegisterModule(new Gphoto2Module(builder.Configuration));    
 });
 
-/*
+builder.Services.AddControllers();
+
 builder.Services.AddGraphQLServer()
-    .AddQueryType<TemplatesQuery>()
-    .AddMutationType<TemplatesMutation>();
-*/
+    .AddQueryType<PhotographerQuery>()
+    .AddMutationType<PhotographerMutation>();
 
 
-/*
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumer<EventConsumer<TemplateCreated>>();
-    x.AddConsumer<EventConsumer<TemplateDeleted>>();
-    x.AddConsumer<EventConsumer<TemplateUpdated>>();
+    x.AddConsumer<CommandConsumer<CaptureImage>>();
+    x.AddConsumer<CommandConsumer<ConnectCamera>>();
+    x.AddConsumer<CommandConsumer<DisconnectCamera>>();
+    x.AddConsumer<CommandConsumer<SetAperture>>();
+    x.AddConsumer<CommandConsumer<SetISO>>();
+    x.AddConsumer<CommandConsumer<SetShutterSpeed>>();
+
+    x.AddConsumer<QueryConsumer<GetAperture>>();
+    x.AddConsumer<QueryConsumer<GetCameras>>();
+    x.AddConsumer<QueryConsumer<GetFiles>>();
+    x.AddConsumer<QueryConsumer<GetFolders>>();
+    x.AddConsumer<QueryConsumer<GetImage>>();
+    x.AddConsumer<QueryConsumer<GetISO>>();
+    x.AddConsumer<QueryConsumer<GetShutterSpeed>>();
 
     x.UsingRabbitMq((context, configuration) =>
     {
@@ -54,14 +67,14 @@ builder.Services.AddMassTransit(x =>
         });
     });
 });
-*/
 
 var app = builder.Build();
 app.UseRouting();
 
 app.UseEndpoints(endpoints =>
 {
-    //endpoints.MapGraphQL();
+    endpoints.MapGraphQL();
+    endpoints.MapControllers();
 });
 
 app.MapGet("/", () =>  "Hello");

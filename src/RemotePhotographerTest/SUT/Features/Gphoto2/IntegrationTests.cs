@@ -163,6 +163,8 @@ namespace RemotePhotographerTest.SUT.Features.Gphoto2
 
             await commandDispatcher.DispatchAsync(new ConnectCamera());
 
+            var model = await queryDispatcher.DispatchAsync<GetFilesModel>(new GetFiles());
+
             /*
             var shutterSpeed = await queryDispatcher.DispatchAsync<ShutterSpeed>(new GetShutterSpeed());
             var newShutterSpeed = shutterSpeed.Values.PickRandom();
@@ -184,6 +186,8 @@ namespace RemotePhotographerTest.SUT.Features.Gphoto2
             {
                 await queryDispatcher.DispatchAsync<GetImageModel>(new GetImage(image));   
             }
+
+            model = await queryDispatcher.DispatchAsync<GetFilesModel>(new GetFiles());
 
             await commandDispatcher.DispatchAsync(new DisconnectCamera());
         }
