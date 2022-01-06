@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace RemotePhotographer.Features.Gphoto2.Extensions;
 
 public static class ByteExtensions 
@@ -15,5 +17,10 @@ public static class ByteExtensions
         }
 
         return (returnStr);
+    }
+
+    public static sbyte[] ConvertToSByte(this string data) 
+    {
+        return Array.ConvertAll(Encoding.ASCII.GetBytes(data), b => Convert.ToSByte(b));
     }
 }

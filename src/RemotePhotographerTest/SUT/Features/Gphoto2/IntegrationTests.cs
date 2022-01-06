@@ -147,7 +147,7 @@ namespace RemotePhotographerTest.SUT.Features.Gphoto2
         [Fact]
         public async void Lorem() 
         {
-            int takePhotos = 10;
+            int takePhotos = 1;
 
             List<string> images = new List<string>();
 
@@ -180,6 +180,10 @@ namespace RemotePhotographerTest.SUT.Features.Gphoto2
                 await commandDispatcher.DispatchAsync(new CaptureImage());
             }
             
+            foreach(string image in images) 
+            {
+                await queryDispatcher.DispatchAsync<GetImageModel>(new GetImage(image));   
+            }
 
             await commandDispatcher.DispatchAsync(new DisconnectCamera());
         }

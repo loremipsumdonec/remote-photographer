@@ -27,7 +27,7 @@ public class CameraService
     public static extern int gp_camera_wait_for_event(IntPtr camera, int timeout, out IntPtr eventtype, out IntPtr eventdata, IntPtr context);
 
     [DllImport("gphoto2")]
-    public static extern int gp_camera_file_get(IntPtr camera,sbyte[] folder,sbyte[] filename, IntPtr type, IntPtr camera_file, IntPtr context);
+    public static extern int gp_camera_file_get(IntPtr camera,sbyte[] folder,sbyte[] filename, short type, IntPtr camera_file, IntPtr context);
 
     [DllImport("gphoto2")]
     public static extern int gp_camera_file_delete(IntPtr camera, sbyte[] folder, sbyte[] filename, IntPtr context);
