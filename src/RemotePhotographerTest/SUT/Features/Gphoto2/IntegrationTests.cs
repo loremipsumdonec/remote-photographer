@@ -11,6 +11,10 @@ using RemotePhotographer.Features.Photographer.Queries;
 using RemotePhotographerTest.Services;
 using RemotePhotographerTest.Utility;
 using Xunit;
+using System.Collections.Generic;
+using Boilerplate.Features.Reactive.Services;
+using System.Reactive.Linq;
+using RemotePhotographer.Features.Photographer.Events;
 
 namespace RemotePhotographerTest.SUT.Features.Gphoto2
 {
@@ -143,13 +147,23 @@ namespace RemotePhotographerTest.SUT.Features.Gphoto2
         [Fact]
         public async void Lorem() 
         {
-            int takePhotos = 4;
+            int takePhotos = 10;
+
+            List<string> images = new List<string>();
 
             var commandDispatcher = Fixture.GetService<ICommandDispatcher>();
             var queryDispatcher = Fixture.GetService<IQueryDispatcher>();
+            var eventHub = Fixture.GetService<IEventHub>();
+
+            eventHub.Connect((stream) => 
+                stream.Where(e => e is ImageCaptured)
+                .Select(e=> e as ImageCaptured)
+                .Subscribe(e => images.Add(e.Path))
+            );
 
             await commandDispatcher.DispatchAsync(new ConnectCamera());
 
+            /*
             var shutterSpeed = await queryDispatcher.DispatchAsync<ShutterSpeed>(new GetShutterSpeed());
             var newShutterSpeed = shutterSpeed.Values.PickRandom();
 
@@ -159,6 +173,7 @@ namespace RemotePhotographerTest.SUT.Features.Gphoto2
             var newISO = iso.Values.Skip(1).PickRandom();
 
             await commandDispatcher.DispatchAsync(new SetISO(newISO));
+            */
 
             for(int index = 0; index < takePhotos; index++) 
             {

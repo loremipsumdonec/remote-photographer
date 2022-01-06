@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using RemotePhotographer.Features.Gphoto2.Models;
 
 namespace RemotePhotographer.Features.Gphoto2.Services.Interop;
 
@@ -20,7 +21,7 @@ public class CameraService
     public static extern int gp_camera_capture_preview(IntPtr camera, IntPtr file, IntPtr context);
 
     [DllImport("gphoto2")]
-    public static extern int gp_camera_capture(IntPtr camera, int type, out IntPtr path, IntPtr context);
+    public static extern int gp_camera_capture(IntPtr camera, int type, out CameraFilePath path, IntPtr context);
 
     [DllImport("gphoto2")]
     public static extern int gp_camera_wait_for_event(IntPtr camera, int timeout, out IntPtr eventtype, out IntPtr eventdata, IntPtr context);
