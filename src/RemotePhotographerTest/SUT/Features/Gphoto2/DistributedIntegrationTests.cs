@@ -49,8 +49,10 @@ namespace RemotePhotographerTest.SUT.Features.Gphoto2
             await dispatcher.DispatchAsync(new ConnectCamera());
             Assert.NotNull(cameraContextManager.CameraContext);
             
+            await dispatcher.DispatchAsync(new CaptureImage());
+
             await dispatcher.DispatchAsync(new DisconnectCamera());
-            Assert.NotNull(cameraContextManager.CameraContext);
+            Assert.Null(cameraContextManager.CameraContext);
         }
     }
 }

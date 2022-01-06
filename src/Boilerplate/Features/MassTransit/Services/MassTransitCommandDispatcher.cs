@@ -8,9 +8,10 @@ namespace Boilerplate.Features.MassTransit.Services
         private readonly ICommandDispatcher _decorated;
         private readonly IDistributedCommandDispatcher _dispatcher;
 
-        public MassTransitCommandDispatcher(ICommandDispatcher decorated)
+        public MassTransitCommandDispatcher(ICommandDispatcher decorated, IDistributedCommandDispatcher dispatcher)
         {
             _decorated = decorated;
+            _dispatcher = dispatcher;
         }
 
         public async Task<bool> DispatchAsync(ICommand command)
