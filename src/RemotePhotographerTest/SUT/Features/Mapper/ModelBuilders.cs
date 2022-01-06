@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace RemotePhotographerTest.SUT.Episerver.Features.Mapper
+namespace RemotePhotographerTest.SUT.Features.Mapper
 {
     [Trait("type", "Unit")]
     public class BuilderAttributes

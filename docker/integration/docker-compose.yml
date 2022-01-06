@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  remote-photographer-message-broker:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 15672:15672
+      - 5672:5672

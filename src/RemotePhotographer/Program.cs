@@ -1,6 +1,3 @@
-using RemotePhotographer.Features.Templates;
-using RemotePhotographer.Features.Templates.Events;
-using RemotePhotographer.Features.Templates.Schema;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Boilerplate.Features.Core;
@@ -9,6 +6,11 @@ using Boilerplate.Features.MassTransit.Services;
 using Boilerplate.Features.Reactive.Reactive;
 using MassTransit;
 using System.Reflection;
+using RemotePhotographer.Features.Gphoto2;
+using RemotePhotographer.Features.Photographer.Schema;
+using RemotePhotographer.Features.Photographer.Queries;
+using RemotePhotographer.Features.Photographer.Commands;
+using Boilerplate.Features.MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -22,18 +24,33 @@ builder.Host.ConfigureContainer((ContainerBuilder containerBuilder) =>
     containerBuilder.RegisterModule(new CoreModule(builder.Configuration, assemblies));
     containerBuilder.RegisterModule(new MapperModule(builder.Configuration, assemblies));
     containerBuilder.RegisterModule(new ReactiveModule(builder.Configuration, assemblies));
-    containerBuilder.RegisterModule(new TemplatesModule(builder.Configuration));
+    containerBuilder.RegisterModule(new MassTransitModule(builder.Configuration, assemblies));
+    containerBuilder.RegisterModule(new Gphoto2Module(builder.Configuration));    
 });
 
+builder.Services.AddControllers();
+
 builder.Services.AddGraphQLServer()
-    .AddQueryType<TemplatesQuery>()
-    .AddMutationType<TemplatesMutation>();
+    .AddQueryType<PhotographerQuery>()
+    .AddMutationType<PhotographerMutation>();
+
 
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumer<EventConsumer<TemplateCreated>>();
-    x.AddConsumer<EventConsumer<TemplateDeleted>>();
-    x.AddConsumer<EventConsumer<TemplateUpdated>>();
+    x.AddConsumer<CommandConsumer<CaptureImage>>();
+    x.AddConsumer<CommandConsumer<ConnectCamera>>();
+    x.AddConsumer<CommandConsumer<DisconnectCamera>>();
+    x.AddConsumer<CommandConsumer<SetAperture>>();
+    x.AddConsumer<CommandConsumer<SetISO>>();
+    x.AddConsumer<CommandConsumer<SetShutterSpeed>>();
+
+    x.AddConsumer<QueryConsumer<GetAperture>>();
+    x.AddConsumer<QueryConsumer<GetCameras>>();
+    x.AddConsumer<QueryConsumer<GetFiles>>();
+    x.AddConsumer<QueryConsumer<GetFolders>>();
+    x.AddConsumer<QueryConsumer<GetImage>>();
+    x.AddConsumer<QueryConsumer<GetISO>>();
+    x.AddConsumer<QueryConsumer<GetShutterSpeed>>();
 
     x.UsingRabbitMq((context, configuration) =>
     {
@@ -50,7 +67,9 @@ builder.Services.AddMassTransit(x =>
             e.ConfigureConsumers(context);
         });
     });
-});
+}).AddMassTransitHostedService();
+
+builder.Services.AddGenericRequestClient();
 
 var app = builder.Build();
 app.UseRouting();
@@ -58,9 +77,10 @@ app.UseRouting();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapGraphQL();
+    endpoints.MapControllers();
 });
 
-app.MapGet("/", () => "Hello RemotePhotographer!");
+app.MapGet("/", () =>  "Hello");
 
 app.Run();
 

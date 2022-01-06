@@ -4,6 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<RootNamespace>RemotePhotographer</RootNamespace>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -22,10 +23,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Boilerplate\Boilerplate.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Features\Templates\Commands\" />
 	</ItemGroup>
 
 </Project>
