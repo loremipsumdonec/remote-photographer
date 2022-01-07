@@ -32,7 +32,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddGraphQLServer()
     .AddQueryType<PhotographerQuery>()
-    .AddMutationType<PhotographerMutation>();
+    .AddMutationType<PhotographerMutation>()
+    .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = true);
 
 
 builder.Services.AddMassTransit(x =>
