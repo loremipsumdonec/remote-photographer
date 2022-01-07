@@ -7,6 +7,7 @@ services:
       - 5672:5672
       
   remote-photographer-service:
+    privileged: true
     image: loremdonecipsum/remote-photographer:alpha
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
