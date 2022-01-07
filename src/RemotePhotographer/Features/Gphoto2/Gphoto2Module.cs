@@ -21,7 +21,7 @@ public class Gphoto2Module
             Configuration
         ).SingleInstance();
 
-        builder.RegisterFromAs<ICameraContextManager>(
+        builder.RegisterFromAs<IMethodValidator>(
             "gphoto2.method.validator",
             Configuration
         ).SingleInstance();
