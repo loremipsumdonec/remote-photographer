@@ -16,32 +16,37 @@ public class CaptureImageHandler
 {
     private readonly ICameraContextManager _manager;
     private readonly IEventDispatcher _dispatcher;
+    private readonly IMethodValidator _validator;
 
-    public CaptureImageHandler(ICameraContextManager manager, IEventDispatcher dispatcher)
+    public CaptureImageHandler(
+        ICameraContextManager manager, 
+        IEventDispatcher dispatcher, 
+        IMethodValidator validator)
     {
         _manager = manager;
         _dispatcher = dispatcher;
+        _validator = validator;
     }
 
     public override Task<bool> ExecuteAsync(CaptureImage command)
     {
-        var status = CameraService.gp_camera_capture(
-            _manager.CameraContext.Camera, 
-            0, 
-            out CameraFilePath cameraFilePath, 
-            _manager.CameraContext.Context
+        _validator.Validate(
+                CameraService.gp_camera_capture(
+                _manager.CameraContext.Camera, 
+                0, 
+                out CameraFilePath cameraFilePath, 
+                _manager.CameraContext.Context
+            ), 
+            nameof(CameraService.gp_camera_capture)
         );
 
-        if(status == 0) 
-        {
-            string folder = cameraFilePath.folder.ConvertToString();
-            string name = cameraFilePath.name.ConvertToString();
+        string folder = cameraFilePath.folder.ConvertToString();
+        string name = cameraFilePath.name.ConvertToString();
 
-            _dispatcher.Dispatch(
-                new ImageCaptured(System.IO.Path.Combine(folder, name))
-            );
-        }
+        _dispatcher.Dispatch(
+            new ImageCaptured(System.IO.Path.Combine(folder, name))
+        );
 
-        return Task.FromResult(status == 0);
+        return Task.FromResult(true);
     }
 }

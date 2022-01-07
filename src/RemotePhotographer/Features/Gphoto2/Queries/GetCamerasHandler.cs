@@ -11,25 +11,57 @@ namespace RemotePhotographer.Features.Gphoto2.Queries;
 public class GetCamerasHandler
     : QueryHandler<GetCameras>
 {
+    private readonly IMethodResutlValidator _validator;
+
     public override Task<IModel> ExecuteAsync(GetCameras query)
     {
         var model = new GetCamerasModel();
 
         var context = ContextService.gp_context_new();
-        PortInfoListService.gp_port_info_list_new(out IntPtr portInfoList);
-        AbilitiesListService.gp_abilities_list_new(out IntPtr cameraAbilitiesList);
-        PortInfoListService.gp_port_info_list_load(portInfoList);
-        AbilitiesListService.gp_abilities_list_load(cameraAbilitiesList, context);
-        ListService.gp_list_new(out IntPtr list);
 
-        AbilitiesListService.gp_abilities_list_detect(cameraAbilitiesList, portInfoList, list, context);
+        _validator.Validate(
+            PortInfoListService.gp_port_info_list_new(out IntPtr portInfoList), 
+            nameof(PortInfoListService.gp_port_info_list_new)
+        );
+
+        _validator.Validate(
+            AbilitiesListService.gp_abilities_list_new(out IntPtr cameraAbilitiesList), 
+            nameof(AbilitiesListService.gp_abilities_list_new)
+        );
+
+        _validator.Validate(
+            PortInfoListService.gp_port_info_list_load(portInfoList), 
+            nameof(PortInfoListService.gp_port_info_list_load)
+        );
+
+        _validator.Validate(
+            AbilitiesListService.gp_abilities_list_load(cameraAbilitiesList, context), 
+            nameof(AbilitiesListService.gp_abilities_list_load)
+        );
+
+        _validator.Validate(
+            ListService.gp_list_new(out IntPtr list), 
+            nameof(ListService.gp_list_new)
+        );
+
+        _validator.Validate(
+            AbilitiesListService.gp_abilities_list_detect(cameraAbilitiesList, portInfoList, list, context),
+            nameof(AbilitiesListService.gp_abilities_list_detect)
+        );
 
         var count = ListService.gp_list_count(list);
 
         for(int index = 0; index < count; index++) 
         {
-            ListService.gp_list_get_name(list, index, out IntPtr namePointer);
-            ListService.gp_list_get_value (list, index, out IntPtr valuePointer);
+            _validator.Validate(
+                ListService.gp_list_get_name(list, index, out IntPtr namePointer), 
+                nameof(ListService.gp_list_get_name)
+            );
+
+            _validator.Validate(
+                ListService.gp_list_get_value(list, index, out IntPtr valuePointer), 
+                nameof(ListService.gp_list_get_value)
+            );
 
             var camera = new Camera(
                 Marshal.PtrToStringAnsi(namePointer), 
@@ -39,9 +71,20 @@ public class GetCamerasHandler
             model.Add(camera);
         }
 
-        ListService.gp_list_free(list);
-        AbilitiesListService.gp_abilities_list_free(cameraAbilitiesList);
-        PortInfoListService.gp_port_info_list_free(portInfoList);
+        _validator.Validate(
+            ListService.gp_list_free(list), nameof(ListService.gp_list_free)
+        );
+
+        _validator.Validate(
+            AbilitiesListService.gp_abilities_list_free(cameraAbilitiesList), 
+            nameof(AbilitiesListService.gp_abilities_list_free)
+        );
+        
+        _validator.Validate(
+            PortInfoListService.gp_port_info_list_free(portInfoList), 
+            nameof(PortInfoListService.gp_port_info_list_free)
+        );
+
         ContextService.gp_context_unref(context);
 
         return Task.FromResult((IModel)model);

@@ -14,18 +14,23 @@ public class GetApertureHandler
 {
     private readonly IModelService _service;
     private readonly ICameraContextManager _manager;
+    private readonly IMethodValidator _validator;
 
-    public GetApertureHandler(IModelService service, ICameraContextManager manager) 
+    public GetApertureHandler(
+        IModelService service, 
+        ICameraContextManager manager, 
+        IMethodValidator validator)
     {
         _service = service;
         _manager = manager;
+        _validator = validator;
     }
 
     public override async Task<IModel> ExecuteAsync(GetAperture query)
     {
-        var isoStatus = CameraService.gp_camera_get_single_config(
+        _validator.Validate(CameraService.gp_camera_get_single_config(
             _manager.CameraContext.Camera, "aperture", out IntPtr widget, _manager.CameraContext.Context
-        );
+        ), nameof(CameraService.gp_camera_get_single_config));
 
         var model = await _service.CreateModelAsync<Aperture>(widget);
 

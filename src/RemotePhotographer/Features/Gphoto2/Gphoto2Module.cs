@@ -5,7 +5,7 @@ using RemotePhotographer.Features.Gphoto2.Services;
 namespace RemotePhotographer.Features.Gphoto2;
 
 public class Gphoto2Module
-        : Autofac.Module
+    : Autofac.Module
 {
     public Gphoto2Module(IConfiguration configuration)
     {
@@ -17,13 +17,14 @@ public class Gphoto2Module
     protected override void Load(ContainerBuilder builder)
     {
         builder.RegisterFromAs<ICameraContextManager>(
-                "gphoto2.camera.context.manager",
-                Configuration
+            "gphoto2.camera.context.manager",
+            Configuration
         ).SingleInstance();
-    }
 
-    private void ValidateConfiguration() 
-    {
+        builder.RegisterFromAs<ICameraContextManager>(
+            "gphoto2.method.validator",
+            Configuration
+        ).SingleInstance();
     }
 }
 

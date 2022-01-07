@@ -15,26 +15,41 @@ public class SetApertureHandler
 {
     private readonly IModelService _service;
     private readonly ICameraContextManager _manager;
+    private readonly IMethodValidator _validator;
 
-    public SetApertureHandler(ICameraContextManager manager, IModelService service)
+    public SetApertureHandler(
+        ICameraContextManager manager, 
+        IModelService service, 
+        IMethodValidator validator)
     {
         _manager = manager;
         _service = service;
+        _validator = validator;
     }
 
     public override async Task<bool> ExecuteAsync(SetAperture command)
     {
-        var shutterSpeedStatus = CameraService.gp_camera_get_single_config(
-            _manager.CameraContext.Camera, "shutterspeed", out IntPtr widget, _manager.CameraContext.Context
+        _validator.Validate(
+            CameraService.gp_camera_get_single_config(
+                _manager.CameraContext.Camera, "aperture", out IntPtr widget, _manager.CameraContext.Context
+            ), 
+            nameof(CameraService.gp_camera_get_single_config)
         );
 
         if(await ValidateAsync(widget, command)) 
         {
             IntPtr value = Marshal.StringToHGlobalAnsi(command.Value);
-            var setWidgetValueStatus = WidgetService.gp_widget_set_value(widget, value);
 
-            var setConfigValueStatus = CameraService.gp_camera_set_single_config(
-                _manager.CameraContext.Camera, "shutterspeed", widget, _manager.CameraContext.Context
+            _validator.Validate(
+                WidgetService.gp_widget_set_value(widget, value), 
+                nameof(WidgetService.gp_widget_set_value)
+            );
+
+            _validator.Validate(
+               CameraService.gp_camera_set_single_config(
+                    _manager.CameraContext.Camera, "aperture", widget, _manager.CameraContext.Context
+                ), 
+               nameof(CameraService.gp_camera_set_single_config)
             );
 
             Marshal.FreeHGlobal(value);

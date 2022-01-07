@@ -15,31 +15,46 @@ public class SetISOHandler
 {
     private readonly IModelService _service;
     private readonly ICameraContextManager _manager;
+    private readonly IMethodValidator _validator;
 
-    public SetISOHandler(ICameraContextManager manager, IModelService service)
+    public SetISOHandler(
+        ICameraContextManager manager, 
+        IModelService service, 
+        IMethodValidator validator)
     {
         _manager = manager;
         _service = service;
+        _validator = validator;
     }
 
     public override async Task<bool> ExecuteAsync(SetISO command)
     {
-        var isoStatus = CameraService.gp_camera_get_single_config(
-            _manager.CameraContext.Camera, "iso", out IntPtr widget, _manager.CameraContext.Context
+        _validator.Validate(
+            CameraService.gp_camera_get_single_config(
+                _manager.CameraContext.Camera, "iso", out IntPtr widget, _manager.CameraContext.Context
+            ),
+            nameof(CameraService.gp_camera_get_single_config)
         );
 
-        if(await ValidateAsync(widget, command)) 
+        if (await ValidateAsync(widget, command))
         {
             IntPtr value = Marshal.StringToHGlobalAnsi(command.Value);
-            var setWidgetValueStatus = WidgetService.gp_widget_set_value(widget, value);
 
-            var setConfigValueStatus = CameraService.gp_camera_set_single_config(
-                _manager.CameraContext.Camera, "iso", widget, _manager.CameraContext.Context
+            _validator.Validate(
+                WidgetService.gp_widget_set_value(widget, value),
+                nameof(WidgetService.gp_widget_set_value)
             );
 
+            _validator.Validate(
+                CameraService.gp_camera_set_single_config(
+                     _manager.CameraContext.Camera, "iso", widget, _manager.CameraContext.Context
+                 ),
+                nameof(CameraService.gp_camera_set_single_config)
+             );
+
             Marshal.FreeHGlobal(value);
-        } 
-        else 
+        }
+        else
         {
             throw new ArgumentException($"ISO value {command.Value} does not exists");
         }
