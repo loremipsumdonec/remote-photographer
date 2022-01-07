@@ -7,6 +7,8 @@ using Boilerplate.Features.Reactive.Services;
 using RemotePhotographer.Features.Photographer.Events;
 using RemotePhotographer.Features.Gphoto2.Models;
 using RemotePhotographer.Features.Gphoto2.Extensions;
+using Boilerplate.Features.Core.Queries;
+using RemotePhotographer.Features.Photographer.Queries;
 
 namespace RemotePhotographer.Features.Gphoto2.Commands;
 
@@ -17,21 +19,24 @@ public class CaptureImageHandler
     private readonly ICameraContextManager _manager;
     private readonly IEventDispatcher _dispatcher;
     private readonly IMethodValidator _validator;
+    private readonly IQueryDispatcher _queryDispatcher;
 
     public CaptureImageHandler(
-        ICameraContextManager manager, 
-        IEventDispatcher dispatcher, 
-        IMethodValidator validator)
+        ICameraContextManager manager,
+        IEventDispatcher dispatcher,
+        IMethodValidator validator, 
+        IQueryDispatcher queryDispatcher)
     {
         _manager = manager;
         _dispatcher = dispatcher;
         _validator = validator;
+        _queryDispatcher = queryDispatcher;
     }
 
-    public override Task<bool> ExecuteAsync(CaptureImage command)
+    public override async Task<bool> ExecuteAsync(CaptureImage command)
     {
         _validator.Validate(
-                CameraService.gp_camera_capture(
+            CameraService.gp_camera_capture(
                 _manager.CameraContext.Camera, 
                 0, 
                 out CameraFilePath cameraFilePath, 
@@ -40,13 +45,27 @@ public class CaptureImageHandler
             nameof(CameraService.gp_camera_capture)
         );
 
-        string folder = cameraFilePath.folder.ConvertToString();
-        string name = cameraFilePath.name.ConvertToString();
-
-        _dispatcher.Dispatch(
-            new ImageCaptured(System.IO.Path.Combine(folder, name))
+        string path = System.IO.Path.Combine(
+            cameraFilePath.folder.ConvertToString(),
+            cameraFilePath.name.ConvertToString()
         );
 
-        return Task.FromResult(true);
+        var image = await _queryDispatcher.DispatchAsync<GetImageModel>(new GetImage(path));
+
+        _validator.Validate(
+            CameraService.gp_camera_file_delete(
+                _manager.CameraContext.Camera, 
+                cameraFilePath.folder, 
+                cameraFilePath.name, 
+                _manager.CameraContext.Context
+            ),
+            nameof(CameraService.gp_camera_file_delete)
+        );
+
+        _dispatcher.Dispatch(
+            new ImageCaptured(path, image.Data)
+        );
+
+        return true;
     }
 }

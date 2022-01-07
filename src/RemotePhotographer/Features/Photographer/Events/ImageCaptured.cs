@@ -10,10 +10,13 @@ public class ImageCaptured
     {
     }
 
-    public ImageCaptured(string path)
+    public ImageCaptured(string path, byte[] data)
     {
         Path = path;
+        Data = data;
     }
 
     public string Path { get; set; }
+
+    public byte[] Data { get; set; }
 }
