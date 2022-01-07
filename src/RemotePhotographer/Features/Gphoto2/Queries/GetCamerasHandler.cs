@@ -1,5 +1,6 @@
 using Boilerplate.Features.Core;
 using Boilerplate.Features.Core.Queries;
+using RemotePhotographer.Features.Gphoto2.Services;
 using RemotePhotographer.Features.Gphoto2.Services.Interop;
 using RemotePhotographer.Features.Photographer.Models;
 using RemotePhotographer.Features.Photographer.Queries;
@@ -11,7 +12,12 @@ namespace RemotePhotographer.Features.Gphoto2.Queries;
 public class GetCamerasHandler
     : QueryHandler<GetCameras>
 {
-    private readonly IMethodResutlValidator _validator;
+    private readonly IMethodValidator _validator;
+
+    public GetCamerasHandler(IMethodValidator validator)
+    {
+        _validator = validator;
+    }
 
     public override Task<IModel> ExecuteAsync(GetCameras query)
     {

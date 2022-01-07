@@ -6,18 +6,25 @@ namespace RemotePhotographer.Features.Gphoto2.Services;
 public class CameraContextManager
     : ICameraContextManager
 {
+    private IMethodValidator _validator;
+
+    public CameraContextManager(IMethodValidator validator)
+    {
+        _validator = validator;
+    }
+
     public CameraContext CameraContext {get; private set;}
 
     public void ConnectCamera() 
     {
         var context = ContextService.gp_context_new();
-        
-        Validator.Validate(
+
+        _validator.Validate(
             CameraService.gp_camera_new(out IntPtr camera), 
             nameof(CameraService.gp_camera_new)
         );
 
-        Validator.Validate(
+        _validator.Validate(
             CameraService.gp_camera_init(camera, context), 
             nameof(CameraService.gp_camera_init)
         );
@@ -30,12 +37,12 @@ public class CameraContextManager
         var cameraContext = CameraContext;
         CameraContext = null;
 
-        Validator.Validate(
+        _validator.Validate(
             CameraService.gp_camera_exit(cameraContext.Camera, cameraContext.Context),
             nameof(CameraService.gp_camera_exit)
         );
 
-        Validator.Validate(
+        _validator.Validate(
             CameraService.gp_camera_free(cameraContext.Camera),
             nameof(CameraService.gp_camera_free)
         );
