@@ -68,7 +68,7 @@ builder.Services.AddMassTransit(x =>
             e.ConfigureConsumers(context);
         });
     });
-}).AddMassTransitHostedService(true);
+}).AddMassTransitHostedService();
 
 builder.Services.AddGenericRequestClient();
 
