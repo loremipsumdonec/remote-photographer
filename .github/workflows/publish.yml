@@ -10,7 +10,7 @@ on:
 jobs:
 
   lorem:
-    uses: loremipsumdonec/remote-photographer/.github/jobs/build.yml
+    uses: loremipsumdonec/remote-photographer/.github/jobs/build.yml@main
     with:
       configuration: Release
 
