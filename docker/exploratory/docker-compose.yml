@@ -8,6 +8,8 @@ services:
       
   remote-photographer-service:
     privileged: true
+    depends_on:
+      - remote-photographer-message-broker
     image: loremdonecipsum/remote-photographer:alpha
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
