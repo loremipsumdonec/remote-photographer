@@ -8,42 +8,10 @@ on:
       - "src/RemotePhotographer/**.*"
       - "src/Boilerplate/**.*"
 jobs:
-  build_service:
 
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: install .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
-
-    - name: restore dependencies
-      run: dotnet restore ./src/RemotePhotographer.sln
-
-    - name: build service
-      run: dotnet build ./src/RemotePhotographer.sln -c Release --no-restore -o out
-
-    - name: login to docker hub
-      uses: docker/login-action@v1 
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: copy dockerfile
-      run: cp ./src/RemotePhotographer/Dockerfile ./Dockerfile
-
-    - name: list files
-      run: ls -l
-
-    - name: build and publish image
-      id: docker_build
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        push: true
-        tags: loremdonecipsum/remote-photographer:alpha
+  lorem:
+    uses: loremipsumdonec/remote-photographer/.github/jobs/build.yml
+    with:
+      configuration: Release
 
     
