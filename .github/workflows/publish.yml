@@ -43,5 +43,5 @@ jobs:
 
     - name: build manifest
       run: | 
-        docker manifest create loremdonecipsum/remote-photographer:alpha \ --amend loremdonecipsum/remote-photographer:x64-alpha --amend loremdonecipsum/remote-photographer:arm-alpha
+        docker manifest create loremdonecipsum/remote-photographer:alpha --amend loremdonecipsum/remote-photographer:x64-alpha --amend loremdonecipsum/remote-photographer:arm-alpha
         docker manifest push loremdonecipsum/remote-photographer:alpha
