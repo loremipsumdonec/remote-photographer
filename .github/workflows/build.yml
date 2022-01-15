@@ -9,6 +9,9 @@ on:
       architecture:
         required: true
         type: string
+      platform:
+        required: true
+        type: string
     secrets:
       dockerhub_username:
         required: true
@@ -27,7 +30,7 @@ jobs:
     - name: set up QEMU
       uses: docker/setup-qemu-action@master
       with:
-        platforms: all
+        platforms: ${{ inputs.platform }}
 
     - name: setup .NET
       uses: actions/setup-dotnet@v1
@@ -53,7 +56,7 @@ jobs:
       id: docker_build
       uses: docker/build-push-action@v2
       with:
-        platforms: linux/${{ inputs.architecture }}
+        platforms: ${{ inputs.platform }}
         context: .
         push: true
         tags: loremdonecipsum/remote-photographer:${{ inputs.architecture }}-alpha
