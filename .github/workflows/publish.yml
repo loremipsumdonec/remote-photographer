@@ -38,8 +38,8 @@ jobs:
     - name: login to docker hub
       uses: docker/login-action@v1 
       with:
-        username: ${{ secrets.dockerhub_username }}
-        password: ${{ secrets.dockerhub_password }}
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: build manifest
       run: | 
