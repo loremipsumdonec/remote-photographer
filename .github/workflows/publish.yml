@@ -14,7 +14,7 @@ jobs:
     with:
       configuration: Release
       architecture: arm
-      platforms: linux/arm
+      platform: linux/arm
     secrets:
       dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub_password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -24,7 +24,7 @@ jobs:
     with:
       configuration: Release
       architecture: x64
-      platforms: linux/amd64
+      platform: linux/amd64
     secrets:
       dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub_password: ${{ secrets.DOCKERHUB_TOKEN }}
