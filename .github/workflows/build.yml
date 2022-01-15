@@ -22,8 +22,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      name: checkout
 
-    - name: install .NET
+    - name: set up QEMU
+      uses: docker/setup-qemu-action@master
+      with:
+        platforms: all
+
+    - name: setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
@@ -47,6 +53,7 @@ jobs:
       id: docker_build
       uses: docker/build-push-action@v2
       with:
+        platforms: linux/${{ inputs.architecture }}
         context: .
         push: true
         tags: loremdonecipsum/remote-photographer:${{ inputs.architecture }}-alpha
