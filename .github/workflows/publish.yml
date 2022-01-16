@@ -23,7 +23,7 @@ jobs:
     uses: loremipsumdonec/remote-photographer/.github/workflows/build.yml@master
     with:
       configuration: Release
-      architecture: arm
+      architecture: arm64
       platform: linux/arm64
     secrets:
       dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
