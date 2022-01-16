@@ -19,6 +19,16 @@ jobs:
       dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub_password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+  linux_arm64:
+    uses: loremipsumdonec/remote-photographer/.github/workflows/build.yml@master
+    with:
+      configuration: Release
+      architecture: arm
+      platform: linux/arm64
+    secrets:
+      dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub_password: ${{ secrets.DOCKERHUB_TOKEN }}
+
   linux_x64:
     uses: loremipsumdonec/remote-photographer/.github/workflows/build.yml@master
     with:
@@ -30,7 +40,7 @@ jobs:
       dockerhub_password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   manifest:
-    needs: [linux_arm, linux_x64]
+    needs: [linux_arm, linux_arm64, linux_x64]
     runs-on: ubuntu-latest
 
     steps: 
@@ -43,5 +53,5 @@ jobs:
 
     - name: build manifest
       run: | 
-        docker manifest create loremdonecipsum/remote-photographer:alpha --amend loremdonecipsum/remote-photographer:x64-alpha --amend loremdonecipsum/remote-photographer:arm-alpha
+        docker manifest create loremdonecipsum/remote-photographer:alpha --amend loremdonecipsum/remote-photographer:x64-alpha --amend loremdonecipsum/remote-photographer:arm64-alpha --amend loremdonecipsum/remote-photographer:arm-alpha
         docker manifest push loremdonecipsum/remote-photographer:alpha
