@@ -12,10 +12,16 @@ namespace RemotePhotographer.Features.Gphoto2.Services
                 return;
             }
 
+            string defaultMessage = $"method {name} failed with status {status}";
+
             switch(status) 
             {
+                case -52:
+                    throw new Gphoto2Exception(status, $"{defaultMessage}, error when trying to find USB device.");
+                case -53:
+                    throw new Gphoto2Exception(status, $"{defaultMessage}, error when trying to claim the USB device.");
                 default:
-                    throw new Gphoto2Exception(status, $"method {name} failed with status {status}");
+                    throw new Gphoto2Exception(status, defaultMessage);
             }
         }
     }
