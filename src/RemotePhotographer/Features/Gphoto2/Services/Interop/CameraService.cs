@@ -56,5 +56,12 @@ public class CameraService
     [DllImport("gphoto2")]
     public static extern int gp_camera_get_config(IntPtr camera, out IntPtr window, IntPtr context);
 
+    [DllImport("gphoto2")]
+    public static extern int gp_camera_get_about(IntPtr camera, out CameraText about, IntPtr context);
 
+    [DllImport("gphoto2")]
+    public static extern int gp_camera_get_summary(IntPtr camera, out CameraText summary, IntPtr context);
+
+    [DllImport("gphoto2")]
+    public static extern int gp_camera_get_abilities(IntPtr camera, out CameraAbilities abilities);
 }

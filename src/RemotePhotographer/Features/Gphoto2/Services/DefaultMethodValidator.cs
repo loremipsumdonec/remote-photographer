@@ -20,6 +20,8 @@ namespace RemotePhotographer.Features.Gphoto2.Services
                     throw new Gphoto2Exception(status, $"{defaultMessage}, error when trying to find USB device.");
                 case -53:
                     throw new Gphoto2Exception(status, $"{defaultMessage}, error when trying to claim the USB device.");
+                case -105:
+                    throw new Gphoto2Exception(status, $"{defaultMessage}, specified camera model was not found.");
                 default:
                     throw new Gphoto2Exception(status, defaultMessage);
             }

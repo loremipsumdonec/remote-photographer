@@ -5,6 +5,10 @@ namespace RemotePhotographer.Features.Photographer.Models;
 public class Camera
     : IModel
 {
+    public Camera()
+    {
+    }
+
     public Camera(string name, string portName)
     {
         Name = name;
@@ -14,4 +18,8 @@ public class Camera
     public string Name { get; set; }      
 
     public string PortName { get; set; }
+
+    public string About { get; set; }
+
+    public string Summary { get; set; }
 }
