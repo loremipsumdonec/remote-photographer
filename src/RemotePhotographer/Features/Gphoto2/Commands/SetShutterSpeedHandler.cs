@@ -6,6 +6,8 @@ using RemotePhotographer.Features.Photographer.Commands;
 using Boilerplate.Features.Core.Services;
 using RemotePhotographer.Features.Photographer.Models;
 using System.Runtime.InteropServices;
+using Boilerplate.Features.Reactive.Services;
+using RemotePhotographer.Features.Photographer.Events;
 
 namespace RemotePhotographer.Features.Gphoto2.Commands;
 
@@ -16,16 +18,18 @@ public class SetShutterSpeedHandler
     private readonly IModelService _service;
     private readonly ICameraContextManager _manager;
     private readonly IMethodValidator _validator;
+    private readonly IEventDispatcher _dispatcher;
 
     public SetShutterSpeedHandler(
-        ICameraContextManager manager, 
+        ICameraContextManager manager,
         IModelService service,
-        IMethodValidator validator
-    )
+        IMethodValidator validator, 
+        IEventDispatcher dispatcher)
     {
         _manager = manager;
         _service = service;
         _validator = validator;
+        _dispatcher = dispatcher;
     }
 
     public override async Task<bool> ExecuteAsync(SetShutterSpeed command)
@@ -54,6 +58,8 @@ public class SetShutterSpeedHandler
              );
 
             Marshal.FreeHGlobal(value);
+
+            _dispatcher.Dispatch(new ShutterSpeedChanged(command.Value));
         }
         else
         {

@@ -6,6 +6,8 @@ using RemotePhotographer.Features.Photographer.Commands;
 using Boilerplate.Features.Core.Services;
 using RemotePhotographer.Features.Photographer.Models;
 using System.Runtime.InteropServices;
+using Boilerplate.Features.Reactive.Services;
+using RemotePhotographer.Features.Photographer.Events;
 
 namespace RemotePhotographer.Features.Gphoto2.Commands;
 
@@ -16,15 +18,18 @@ public class SetApertureHandler
     private readonly IModelService _service;
     private readonly ICameraContextManager _manager;
     private readonly IMethodValidator _validator;
+    private readonly IEventDispatcher _dispatcher;
 
     public SetApertureHandler(
-        ICameraContextManager manager, 
-        IModelService service, 
-        IMethodValidator validator)
+        ICameraContextManager manager,
+        IModelService service,
+        IMethodValidator validator, 
+        IEventDispatcher dispatcher)
     {
         _manager = manager;
         _service = service;
         _validator = validator;
+        _dispatcher = dispatcher;
     }
 
     public override async Task<bool> ExecuteAsync(SetAperture command)
@@ -53,6 +58,8 @@ public class SetApertureHandler
             );
 
             Marshal.FreeHGlobal(value);
+
+            _dispatcher.Dispatch(new ApertureChanged(command.Value));
         } 
         else 
         {

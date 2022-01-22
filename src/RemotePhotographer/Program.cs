@@ -29,12 +29,13 @@ builder.Host.ConfigureContainer((ContainerBuilder containerBuilder) =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddInMemorySubscriptions();
 
 builder.Services.AddGraphQLServer()
     .AddQueryType<PhotographerQuery>()
     .AddMutationType<PhotographerMutation>()
+    .AddSubscriptionType<PhotographerSubscription>()
     .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = true);
-
 
 builder.Services.AddMassTransit(x =>
 {
@@ -74,6 +75,7 @@ builder.Services.AddGenericRequestClient();
 
 var app = builder.Build();
 app.UseRouting();
+app.UseWebSockets();
 
 app.UseEndpoints(endpoints =>
 {
@@ -81,7 +83,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
-app.MapGet("/", () =>  "Hello");
+app.MapGet("/", () =>  "remote photographer service");
 
 app.Run();
 
