@@ -54,4 +54,11 @@ public class PhotographerQuery
             new GetShutterSpeed()
         );
     }
+
+    public Task<CaptureTarget> CaptureTarget([Service] IQueryDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync<CaptureTarget>(
+            new GetCaptureTarget()
+        );
+    }
 }

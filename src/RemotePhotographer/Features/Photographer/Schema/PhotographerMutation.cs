@@ -33,6 +33,13 @@ public class PhotographerMutation
         );
     }
 
+    public Task<bool> SetCaptureTarget(string value, [Service] ICommandDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync(
+            new SetCaptureTarget(value)
+        );
+    }
+
     public Task<bool> CaptureImage([Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(

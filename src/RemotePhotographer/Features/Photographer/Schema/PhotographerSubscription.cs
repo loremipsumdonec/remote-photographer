@@ -20,5 +20,8 @@ public class PhotographerSubscription
     public ShutterSpeedChanged OnShutterSpeedChanged([EventMessage] ShutterSpeedChanged @event) => @event;
 
     [Subscribe]
+    public CaptureTargetChanged OnCaptureTargetChanged([EventMessage] CaptureTargetChanged @event) => @event;
+
+    [Subscribe]
     public ISOChanged OnISOChanged([EventMessage] ISOChanged @event) => @event;
 }

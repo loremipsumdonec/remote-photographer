@@ -1,7 +1,7 @@
 using Boilerplate.Features.Core.Queries;
 
 namespace RemotePhotographer.Features.Photographer.Queries;
-public class GetAperture 
+public class GetCaptureTarget 
     : Query
 {
 }
