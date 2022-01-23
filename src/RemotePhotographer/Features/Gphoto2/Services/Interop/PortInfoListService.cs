@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using RemotePhotographer.Features.Gphoto2.Models;
 
 namespace RemotePhotographer.Features.Gphoto2.Services.Interop;
 
@@ -26,6 +27,6 @@ public class PortInfoListService
     public static extern int gp_port_info_get_path(IntPtr portInfoList, out IntPtr name);
 
     [DllImport("gphoto2")]
-    public static extern int gp_port_info_get_type(IntPtr portInfoList, out IntPtr name);
+    public static extern int gp_port_info_get_type(IntPtr portInfoList, out GPPortType type);
 
 }

@@ -6,6 +6,13 @@ namespace RemotePhotographer.Features.Photographer.Schema;
 
 public class PhotographerQuery
 {
+    public Task<GetPortsModel> Ports([Service] IQueryDispatcher dispatcher) 
+    {
+        return dispatcher.DispatchAsync<GetPortsModel>(
+            new GetPorts()
+        );
+    }
+
     public Task<GetCamerasModel> Cameras([Service] IQueryDispatcher dispatcher) 
     {
         return dispatcher.DispatchAsync<GetCamerasModel>(
