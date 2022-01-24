@@ -61,10 +61,10 @@ public class PhotographerMutation
         );
     }
 
-    public Task<bool> StartCapturePreview([Service] ICommandDispatcher dispatcher)
+    public Task<bool> StartCapturePreview(int fps, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new StartCapturePreview()
+            new StartCapturePreview(fps)
         );
     }
 

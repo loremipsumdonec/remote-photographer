@@ -29,7 +29,7 @@ public class StartCapturePreviewHandler
 
     public override async Task<bool> ExecuteAsync(StartCapturePreview command)
     {
-        await _service.StartPreviewAsync(30);
+        await _service.StartPreviewAsync(command.FPS);
         return true;
     }
 }
