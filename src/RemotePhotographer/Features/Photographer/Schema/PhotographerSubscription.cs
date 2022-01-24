@@ -23,5 +23,8 @@ public class PhotographerSubscription
     public CaptureTargetChanged OnCaptureTargetChanged([EventMessage] CaptureTargetChanged @event) => @event;
 
     [Subscribe]
+    public ImageFormatChanged OnImageFormatChanged([EventMessage] ImageFormatChanged @event) => @event;
+
+    [Subscribe]
     public ISOChanged OnISOChanged([EventMessage] ISOChanged @event) => @event;
 }

@@ -1,4 +1,3 @@
-using RemotePhotographer.Features.Gphoto2.Services.Interop;
 using RemotePhotographer.Features.Gphoto2.Models;
 
 namespace RemotePhotographer.Features.Gphoto2.Services;
@@ -13,5 +12,15 @@ public class CameraContextManager
         _validator = validator;
     }
 
-    public CameraContext CameraContext {get; set;}
+    public object Door { get; } = new object();
+
+    public void EnsureCameraContext() 
+    {
+        if(CameraContext == null) 
+        {
+            throw new InvalidOperationException("No camera not connected");
+        }        
+    }
+
+    public CameraContext CameraContext { get; set; }
 }

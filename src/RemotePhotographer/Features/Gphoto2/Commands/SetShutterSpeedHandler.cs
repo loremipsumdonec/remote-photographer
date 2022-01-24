@@ -3,65 +3,51 @@ using Boilerplate.Features.Core.Commands;
 using RemotePhotographer.Features.Gphoto2.Services.Interop;
 using RemotePhotographer.Features.Gphoto2.Services;
 using RemotePhotographer.Features.Photographer.Commands;
-using Boilerplate.Features.Core.Services;
 using RemotePhotographer.Features.Photographer.Models;
 using System.Runtime.InteropServices;
 using Boilerplate.Features.Reactive.Services;
 using RemotePhotographer.Features.Photographer.Events;
+using Boilerplate.Features.Core.Queries;
+using RemotePhotographer.Features.Photographer.Queries;
 
 namespace RemotePhotographer.Features.Gphoto2.Commands;
 
 [Handle(typeof(SetShutterSpeed))]
 public class SetShutterSpeedHandler
     : CommandHandler<SetShutterSpeed>
-{   
-    private readonly IModelService _service;
+{
     private readonly ICameraContextManager _manager;
+    private readonly IQueryDispatcher _queryDispatcher;
     private readonly IMethodValidator _validator;
     private readonly IEventDispatcher _dispatcher;
 
     public SetShutterSpeedHandler(
         ICameraContextManager manager,
-        IModelService service,
+        IQueryDispatcher queryDispatcher,
         IMethodValidator validator, 
         IEventDispatcher dispatcher)
     {
         _manager = manager;
-        _service = service;
+        _queryDispatcher = queryDispatcher;
         _validator = validator;
         _dispatcher = dispatcher;
     }
 
     public override async Task<bool> ExecuteAsync(SetShutterSpeed command)
     {
-        _validator.Validate(
-            CameraService.gp_camera_get_single_config(
-                _manager.CameraContext.Camera, "shutterspeed", out IntPtr widget, _manager.CameraContext.Context
-            ),
-            nameof(CameraService.gp_camera_get_single_config)
-        );
+        var shutterSpeed = await GetShutterSpeedAsync();
 
-        if (await ValidateAsync(widget, command))
+        if(shutterSpeed.Current == command.Value) 
         {
-            IntPtr value = Marshal.StringToHGlobalAnsi(command.Value);
+            return true;
+        }
 
-            _validator.Validate(
-                WidgetService.gp_widget_set_value(widget, value),
-                nameof(WidgetService.gp_widget_set_value)
-            );
-
-            _validator.Validate(
-                CameraService.gp_camera_set_single_config(
-                     _manager.CameraContext.Camera, "shutterspeed", widget, _manager.CameraContext.Context
-                 ),
-                nameof(CameraService.gp_camera_set_single_config)
-             );
-
-            Marshal.FreeHGlobal(value);
-
+        if(Validate(command, shutterSpeed)) 
+        {
+            Set(command);
             _dispatcher.Dispatch(new ShutterSpeedChanged(command.Value));
         }
-        else
+        else 
         {
             throw new ArgumentException($"Shutter speed value {command.Value} does not exists");
         }
@@ -69,9 +55,44 @@ public class SetShutterSpeedHandler
         return true;
     }
 
-    private async Task<bool> ValidateAsync(IntPtr widget, SetShutterSpeed command)
+    private Task<ShutterSpeed> GetShutterSpeedAsync() 
     {
-        var model = await _service.CreateModelAsync<ShutterSpeed>(widget);
-        return model.Values.Contains(command.Value);
+        return _queryDispatcher.DispatchAsync<ShutterSpeed>(new GetShutterSpeed());
+    }
+
+    private bool Validate(SetShutterSpeed command, ShutterSpeed shutterSpeed)
+    {
+        return shutterSpeed.Values.Contains(command.Value);
+    }
+
+    private void Set(SetShutterSpeed command) 
+    {
+        lock(_manager.Door) 
+        {
+            _manager.EnsureCameraContext();
+            
+            _validator.Validate(
+                CameraService.gp_camera_get_single_config(
+                    _manager.CameraContext.Camera, "shutterspeed", out IntPtr widget, _manager.CameraContext.Context
+                ), 
+                nameof(CameraService.gp_camera_get_single_config)
+            );
+
+            IntPtr value = Marshal.StringToHGlobalAnsi(command.Value);
+
+            _validator.Validate(
+                WidgetService.gp_widget_set_value(widget, value), 
+                nameof(WidgetService.gp_widget_set_value)
+            );
+
+            _validator.Validate(
+                CameraService.gp_camera_set_single_config(
+                    _manager.CameraContext.Camera, "shutterspeed", widget, _manager.CameraContext.Context
+                ), 
+                nameof(CameraService.gp_camera_set_single_config)
+            );
+
+            Marshal.FreeHGlobal(value);
+        }
     }
 }

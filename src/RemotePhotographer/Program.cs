@@ -11,6 +11,7 @@ using RemotePhotographer.Features.Photographer.Schema;
 using RemotePhotographer.Features.Photographer.Queries;
 using RemotePhotographer.Features.Photographer.Commands;
 using Boilerplate.Features.MassTransit;
+using RemotePhotographer.Features.Gphoto2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -30,6 +31,8 @@ builder.Host.ConfigureContainer((ContainerBuilder containerBuilder) =>
 
 builder.Services.AddControllers();
 builder.Services.AddInMemorySubscriptions();
+
+builder.Services.AddHostedService(p => p.GetRequiredService<CapturePreviewBackgroundService>());
 
 builder.Services.AddGraphQLServer()
     .AddQueryType<PhotographerQuery>()

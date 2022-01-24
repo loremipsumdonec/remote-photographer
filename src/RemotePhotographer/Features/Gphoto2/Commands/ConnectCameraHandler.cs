@@ -29,19 +29,22 @@ public class ConnectCameraHandler
 
     public override Task<bool> ExecuteAsync(ConnectCamera query)
     {
-        var context = ContextService.gp_context_new();
+        lock(_manager.Door) 
+        {
+            var context = ContextService.gp_context_new();
 
-        _validator.Validate(
-            CameraService.gp_camera_new(out IntPtr camera), 
-            nameof(CameraService.gp_camera_new)
-        );
+            _validator.Validate(
+                CameraService.gp_camera_new(out IntPtr camera), 
+                nameof(CameraService.gp_camera_new)
+            );
 
-        _validator.Validate(
-            CameraService.gp_camera_init(camera, context), 
-            nameof(CameraService.gp_camera_init)
-        );
+            _validator.Validate(
+                CameraService.gp_camera_init(camera, context), 
+                nameof(CameraService.gp_camera_init)
+            );
 
-        _manager.CameraContext = new CameraContext(context, camera);
+            _manager.CameraContext = new CameraContext(context, camera);
+        }
 
         _dispatcher.Dispatch(new CameraConnected());
 

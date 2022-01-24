@@ -25,6 +25,9 @@ public class Gphoto2Module
             "gphoto2.method.validator",
             Configuration
         ).SingleInstance();
+
+        builder.RegisterType<CapturePreviewBackgroundService>()
+            .SingleInstance();
     }
 }
 

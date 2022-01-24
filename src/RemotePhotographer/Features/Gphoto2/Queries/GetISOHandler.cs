@@ -1,6 +1,6 @@
+using System.Runtime.InteropServices;
 using Boilerplate.Features.Core;
 using Boilerplate.Features.Core.Queries;
-using Boilerplate.Features.Core.Services;
 using RemotePhotographer.Features.Gphoto2.Services;
 using RemotePhotographer.Features.Gphoto2.Services.Interop;
 using RemotePhotographer.Features.Photographer.Models;
@@ -12,31 +12,54 @@ namespace RemotePhotographer.Features.Gphoto2.Queries;
 public class GetISOHandler
     : QueryHandler<GetISO>
 {
-    private readonly IModelService _service;
     private readonly ICameraContextManager _manager;
     private readonly IMethodValidator _validator;
 
     public GetISOHandler(
-        IModelService service, 
         ICameraContextManager manager, 
-        IMethodValidator validator
-    )
+        IMethodValidator validator)
     {
-        _service = service;
         _manager = manager;
         _validator = validator;
     }
 
-    public override async Task<IModel> ExecuteAsync(GetISO query)
+    public override Task<IModel> ExecuteAsync(GetISO query)
     {
-        _validator.Validate(
-            CameraService.gp_camera_get_single_config(
+        lock(_manager.Door) 
+        {
+            _manager.EnsureCameraContext();
+            
+            _validator.Validate(CameraService.gp_camera_get_single_config(
                 _manager.CameraContext.Camera, "iso", out IntPtr widget, _manager.CameraContext.Context
-            ), 
-            nameof(CameraService.gp_camera_get_single_config)
+            ), nameof(CameraService.gp_camera_get_single_config));
+
+            var model = CreateISO(widget);
+        
+            return Task.FromResult((IModel)model);
+        }
+    }
+
+    private ISO CreateISO(IntPtr widget)
+    {
+        var model = new ISO(); 
+
+        _validator.Validate(
+            WidgetService.gp_widget_get_value(widget, out IntPtr valuePointer), 
+            nameof(WidgetService.gp_widget_get_value)
         );
 
-        var model = await _service.CreateModelAsync<ISO>(widget);
+        model.Current = Marshal.PtrToStringAnsi(valuePointer);
+
+        int total = WidgetService.gp_widget_count_choices(widget);
+
+        for(int index = 0; index < total; index++) 
+        {
+            _validator.Validate(
+                WidgetService.gp_widget_get_choice(widget, index, out IntPtr choice),
+                nameof(WidgetService.gp_widget_get_choice)
+            );
+            model.Add(Marshal.PtrToStringAnsi(choice));
+        }
 
         return model;
     }

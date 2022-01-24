@@ -24,55 +24,67 @@ public class GetCameraHandler
 
     public override Task<IModel> ExecuteAsync(GetCamera query)
     {
-        if (_manager.CameraContext == null)
-        {
-            throw new InvalidOperationException("No camera connected");
-        }
-
         var model = new Camera();
-        var context = _manager.CameraContext;
-
-        _validator.Validate(
-            CameraService.gp_camera_get_abilities(
-                context.Camera,
-                out CameraAbilities abilities
-            ),
-            nameof(CameraService.gp_camera_get_abilities)
-        );
-
-        model.Name = abilities.model.ConvertToString();
-
-        LoadAbout(model, context);
-        LoadSummary(model, context);
+        LoadAbilities(model);
+        LoadAbout(model);
+        LoadSummary(model);
 
         return Task.FromResult((IModel)model);
     }
 
-    private void LoadAbout(Camera model, CameraContext context)
+    private void LoadAbilities(Camera model) 
     {
-        _validator.Validate(
-            CameraService.gp_camera_get_about(
-                context.Camera,
-                out CameraText text,
-                context.Context
-            ),
-            nameof(CameraService.gp_camera_get_about)
-        );
+        lock(_manager.Door) 
+        {
+            _manager.EnsureCameraContext();
 
-        model.About = text.text.ConvertToString();
+             _validator.Validate(
+                CameraService.gp_camera_get_abilities(
+                    _manager.CameraContext.Camera,
+                    out CameraAbilities abilities
+                ),
+                nameof(CameraService.gp_camera_get_abilities)
+            );
+
+            model.Name = abilities.model.ConvertToString();
+        }
     }
 
-    private void LoadSummary(Camera model, CameraContext context)
+    private void LoadAbout(Camera model)
     {
-        _validator.Validate(
-            CameraService.gp_camera_get_summary(
-                context.Camera,
-                out CameraText text,
-                context.Context
-            ),
-            nameof(CameraService.gp_camera_get_summary)
-        );
+        lock(_manager.Door) 
+        {
+            _manager.EnsureCameraContext();
 
-        model.Summary = text.text.ConvertToString();
+            _validator.Validate(
+                CameraService.gp_camera_get_about(
+                    _manager.CameraContext.Camera,
+                    out CameraText text,
+                    _manager.CameraContext.Context
+                ),
+                nameof(CameraService.gp_camera_get_about)
+            );
+
+            model.About = text.text.ConvertToString();
+        }
+    }
+
+    private void LoadSummary(Camera model)
+    {
+        lock(_manager.Door) 
+        {
+            _manager.EnsureCameraContext();
+            
+            _validator.Validate(
+                CameraService.gp_camera_get_summary(
+                    _manager.CameraContext.Camera,
+                    out CameraText text,
+                    _manager.CameraContext.Context
+                ),
+                nameof(CameraService.gp_camera_get_summary)
+            );
+
+            model.Summary = text.text.ConvertToString();
+        }
     }
 }

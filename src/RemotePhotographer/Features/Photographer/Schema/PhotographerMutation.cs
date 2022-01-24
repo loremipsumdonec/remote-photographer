@@ -40,10 +40,38 @@ public class PhotographerMutation
         );
     }
 
+    public Task<bool> SetImageFormat(string value, [Service] ICommandDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync(
+            new SetImageFormat(value)
+        );
+    }
+
     public Task<bool> CaptureImage([Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
             new CaptureImage()
+        );
+    }
+
+    public Task<bool> CapturePreviewImage([Service] ICommandDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync(
+            new CapturePreviewImage()
+        );
+    }
+
+    public Task<bool> StartCapturePreview([Service] ICommandDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync(
+            new StartCapturePreview()
+        );
+    }
+
+    public Task<bool> StopCapturePreview([Service] ICommandDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync(
+            new StopCapturePreview()
         );
     }
 }

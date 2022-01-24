@@ -8,14 +8,14 @@ using RemotePhotographer.Features.Photographer.Queries;
 
 namespace RemotePhotographer.Features.Gphoto2.Queries;
 
-[Handle(typeof(GetShutterSpeed))]
-public class GetShutterSpeedHandler
-    : QueryHandler<GetShutterSpeed>
+[Handle(typeof(GetImageFormat))]
+public class GetImageFormatHandler
+    : QueryHandler<GetImageFormat>
 {
     private readonly ICameraContextManager _manager;
     private readonly IMethodValidator _validator;
 
-    public GetShutterSpeedHandler(
+    public GetImageFormatHandler(
         ICameraContextManager manager, 
         IMethodValidator validator)
     {
@@ -23,25 +23,25 @@ public class GetShutterSpeedHandler
         _validator = validator;
     }
 
-    public override Task<IModel> ExecuteAsync(GetShutterSpeed query)
+    public override Task<IModel> ExecuteAsync(GetImageFormat query)
     {
         lock(_manager.Door) 
         {
             _manager.EnsureCameraContext();
             
             _validator.Validate(CameraService.gp_camera_get_single_config(
-                _manager.CameraContext.Camera, "shutterspeed", out IntPtr widget, _manager.CameraContext.Context
+                _manager.CameraContext.Camera, "imageformat", out IntPtr widget, _manager.CameraContext.Context
             ), nameof(CameraService.gp_camera_get_single_config));
 
-            var model = CreateShutterSpeed(widget);
+            var model = CreateImageFormat(widget);
         
             return Task.FromResult((IModel)model);
         }
     }
 
-    private ShutterSpeed CreateShutterSpeed(IntPtr widget)
+    private ImageFormat CreateImageFormat(IntPtr widget)
     {
-        var model = new ShutterSpeed(); 
+        var model = new ImageFormat(); 
 
         _validator.Validate(
             WidgetService.gp_widget_get_value(widget, out IntPtr valuePointer), 

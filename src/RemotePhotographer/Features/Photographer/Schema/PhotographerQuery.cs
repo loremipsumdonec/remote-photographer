@@ -41,6 +41,13 @@ public class PhotographerQuery
         );
     }
 
+    public Task<Aperture> Aperture([Service] IQueryDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync<Aperture>(
+            new GetAperture()
+        );
+    }
+
     public Task<ISO> Iso([Service] IQueryDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync<ISO>(
@@ -59,6 +66,13 @@ public class PhotographerQuery
     {
         return dispatcher.DispatchAsync<CaptureTarget>(
             new GetCaptureTarget()
+        );
+    }
+
+        public Task<ImageFormat> ImageFormat([Service] IQueryDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync<ImageFormat>(
+            new GetImageFormat()
         );
     }
 }

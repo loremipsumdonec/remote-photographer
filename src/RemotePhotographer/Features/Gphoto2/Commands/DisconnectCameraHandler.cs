@@ -28,20 +28,26 @@ public class DisconnectCameraHandler
 
     public override Task<bool> ExecuteAsync(DisconnectCamera query)
     {
-        var cameraContext = _manager.CameraContext;
-        _manager.CameraContext = null;
+        lock(_manager.Door) 
+        {
+            _manager.EnsureCameraContext();
 
-        _validator.Validate(
-            CameraService.gp_camera_exit(cameraContext.Camera, cameraContext.Context),
-            nameof(CameraService.gp_camera_exit)
-        );
+            var cameraContext = _manager.CameraContext;
+            _manager.CameraContext = null;
 
-        _validator.Validate(
-            CameraService.gp_camera_free(cameraContext.Camera),
-            nameof(CameraService.gp_camera_free)
-        );
+            _validator.Validate(
+                CameraService.gp_camera_exit(cameraContext.Camera, cameraContext.Context),
+                nameof(CameraService.gp_camera_exit)
+            );
 
-        ContextService.gp_context_unref(cameraContext.Context);
+            _validator.Validate(
+                CameraService.gp_camera_free(cameraContext.Camera),
+                nameof(CameraService.gp_camera_free)
+            );
+
+            ContextService.gp_context_unref(cameraContext.Context);
+        }
+
         _dispatcher.Dispatch(new CameraDisconnected());
 
         return Task.FromResult(true);

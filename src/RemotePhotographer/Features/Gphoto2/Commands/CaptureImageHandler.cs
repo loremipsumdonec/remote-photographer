@@ -35,37 +35,41 @@ public class CaptureImageHandler
 
     public override async Task<bool> ExecuteAsync(CaptureImage command)
     {
-        _validator.Validate(
-            CameraService.gp_camera_capture(
-                _manager.CameraContext.Camera, 
-                0, 
-                out CameraFilePath cameraFilePath, 
-                _manager.CameraContext.Context
-            ), 
-            nameof(CameraService.gp_camera_capture)
-        );
+        string imageFile = CaptureImageWithCamera();
+        var image = await CreateImageFromFileAsync(imageFile);
 
-        string path = System.IO.Path.Combine(
-            cameraFilePath.folder.ConvertToString(),
-            cameraFilePath.name.ConvertToString()
-        );
-
-        var image = await _queryDispatcher.DispatchAsync<GetImageModel>(new GetImage(path));
-
-        _validator.Validate(
-            CameraService.gp_camera_file_delete(
-                _manager.CameraContext.Camera, 
-                cameraFilePath.folder, 
-                cameraFilePath.name, 
-                _manager.CameraContext.Context
-            ),
-            nameof(CameraService.gp_camera_file_delete)
-        );
-
-        _dispatcher.Dispatch(
-            new ImageCaptured(path, image.Data)
-        );
+        _dispatcher.Dispatch(new ImageCaptured(imageFile, image.Data));
 
         return true;
+    }
+
+    private string CaptureImageWithCamera() 
+    {
+        lock(_manager.Door) 
+        {
+            _manager.EnsureCameraContext();
+
+            _validator.Validate(
+                CameraService.gp_camera_capture(
+                    _manager.CameraContext.Camera, 
+                    0, 
+                    out CameraFilePath cameraFilePath, 
+                    _manager.CameraContext.Context
+                ), 
+                nameof(CameraService.gp_camera_capture)
+            );
+
+            string path = System.IO.Path.Combine(
+                cameraFilePath.folder.ConvertToString(),
+                cameraFilePath.name.ConvertToString()
+            );
+
+            return path;
+        }
+    }
+
+    private async Task<GetImageModel> CreateImageFromFileAsync(string imageFile) 
+    {
+        return await _queryDispatcher.DispatchAsync<GetImageModel>(new GetImage(imageFile));
     }
 }

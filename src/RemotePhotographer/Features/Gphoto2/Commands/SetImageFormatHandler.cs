@@ -12,16 +12,16 @@ using RemotePhotographer.Features.Photographer.Queries;
 
 namespace RemotePhotographer.Features.Gphoto2.Commands;
 
-[Handle(typeof(SetAperture))]
-public class SetApertureHandler
-    : CommandHandler<SetAperture>
+[Handle(typeof(SetImageFormat))]
+public class SetImageFormatHandler
+    : CommandHandler<SetImageFormat>
 {
     private readonly ICameraContextManager _manager;
     private readonly IQueryDispatcher _queryDispatcher;
     private readonly IMethodValidator _validator;
     private readonly IEventDispatcher _dispatcher;
 
-    public SetApertureHandler(
+    public SetImageFormatHandler(
         ICameraContextManager manager,
         IQueryDispatcher queryDispatcher,
         IMethodValidator validator, 
@@ -33,48 +33,47 @@ public class SetApertureHandler
         _dispatcher = dispatcher;
     }
 
-    public override async Task<bool> ExecuteAsync(SetAperture command)
+    public override async Task<bool> ExecuteAsync(SetImageFormat command)
     {
-        var aperture = await GetApertureAsync();
+        var imageFormat = await GetImageFormatAsync();
 
-        if(aperture.Current == command.Value) 
+        if(imageFormat.Current == command.Value) 
         {
             return true;
         }
 
-        if(Validate(command, aperture)) 
+        if(Validate(command, imageFormat)) 
         {
             Set(command);
-            _dispatcher.Dispatch(new ApertureChanged(command.Value));
+            _dispatcher.Dispatch(new ImageFormatChanged(command.Value));
         }
         else 
         {
-            throw new ArgumentException($"Aperture value {command.Value} does not exists");
+            throw new ArgumentException($"Capture target value {command.Value} does not exists");
         }
 
         return true;
     }
 
-    private Task<Aperture> GetApertureAsync() 
+    private Task<ImageFormat> GetImageFormatAsync() 
     {
-        return _queryDispatcher.DispatchAsync<Aperture>(new GetAperture());
+        return _queryDispatcher.DispatchAsync<ImageFormat>(new GetImageFormat());
     }
 
-    private bool Validate(SetAperture command, Aperture aperture)
+    private bool Validate(SetImageFormat command, ImageFormat imageFormat)
     {
-        return aperture.Values.Contains(command.Value);
+        return imageFormat.Values.Contains(command.Value);
     }
 
-    private void Set(SetAperture command) 
+    private void Set(SetImageFormat command) 
     {
         lock(_manager.Door) 
         {
             _manager.EnsureCameraContext();
-
             
             _validator.Validate(
                 CameraService.gp_camera_get_single_config(
-                    _manager.CameraContext.Camera, "aperture", out IntPtr widget, _manager.CameraContext.Context
+                    _manager.CameraContext.Camera, "imageformat", out IntPtr widget, _manager.CameraContext.Context
                 ), 
                 nameof(CameraService.gp_camera_get_single_config)
             );
@@ -88,7 +87,7 @@ public class SetApertureHandler
 
             _validator.Validate(
                 CameraService.gp_camera_set_single_config(
-                    _manager.CameraContext.Camera, "aperture", widget, _manager.CameraContext.Context
+                    _manager.CameraContext.Camera, "imageformat", widget, _manager.CameraContext.Context
                 ), 
                 nameof(CameraService.gp_camera_set_single_config)
             );
