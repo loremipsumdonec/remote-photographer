@@ -5,10 +5,10 @@ namespace RemotePhotographer.Features.Photographer.Schema;
 
 public class PhotographerMutation
 {
-    public Task<bool> Connect([Service] ICommandDispatcher dispatcher) 
+    public Task<bool> Connect(IEnumerable<string> tags, [Service] ICommandDispatcher dispatcher) 
     {
         return dispatcher.DispatchAsync(
-            new ConnectCamera()
+            new ConnectCamera(tags)
         );
     }
 

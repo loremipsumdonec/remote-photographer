@@ -10,10 +10,13 @@ public class PreviewImageCaptured
     {
     }
 
-    public PreviewImageCaptured(byte[] data)
+    public PreviewImageCaptured(byte[] data, IEnumerable<string> tags)
     {
         Data = data;
+        Tags = new List<string>(tags);
     }
 
     public byte[] Data { get; set; }
+
+    public IEnumerable<string> Tags {get; set;}
 }

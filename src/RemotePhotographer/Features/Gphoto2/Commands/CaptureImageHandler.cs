@@ -38,9 +38,19 @@ public class CaptureImageHandler
         string imageFile = CaptureImageWithCamera();
         var image = await CreateImageFromFileAsync(imageFile);
 
-        _dispatcher.Dispatch(new ImageCaptured(imageFile, image.Data));
+        _dispatcher.Dispatch(new ImageCaptured(imageFile, image.Data, GetTags()));
 
         return true;
+    }
+
+    private IEnumerable<string> GetTags() 
+    {
+        lock(_manager.Door) {
+
+            _manager.EnsureCameraContext();
+
+            return _manager.CameraContext.Tags;
+        }        
     }
 
     private string CaptureImageWithCamera() 
@@ -67,7 +77,7 @@ public class CaptureImageHandler
             return path;
         }
     }
-
+    
     private async Task<GetImageModel> CreateImageFromFileAsync(string imageFile) 
     {
         return await _queryDispatcher.DispatchAsync<GetImageModel>(new GetImage(imageFile));

@@ -71,7 +71,7 @@ namespace RemotePhotographer.Features.Gphoto2.Services
                     CapturePreviewImageWithCamera(cameraFilePathPointer);
                     var previewImageData = GetPreviewImageData(cameraFilePathPointer);
                     
-                    _dispatcher.Dispatch(new PreviewImageCaptured(previewImageData));
+                    _dispatcher.Dispatch(new PreviewImageCaptured(previewImageData, GetTags()));
 
                     await DelayAsync();
                 }
@@ -144,6 +144,19 @@ namespace RemotePhotographer.Features.Gphoto2.Services
                     nameof(CameraService.gp_camera_capture_preview)
                 );
             }
+        }
+    
+        private IEnumerable<string> GetTags() 
+        {
+            lock(_manager.Door) {
+
+                _manager.EnsureCameraContext();
+
+                var tags = new List<string>(_manager.CameraContext.Tags);
+                tags.Add("preview");
+
+                return tags;
+            }        
         }
     }
 }

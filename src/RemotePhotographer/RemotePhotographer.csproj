@@ -13,6 +13,7 @@
 		<PackageReference Include="MassTransit.AspNetCore" Version="7.2.4" />
 		<PackageReference Include="MassTransit.Autofac" Version="7.2.4" />
 		<PackageReference Include="MassTransit.RabbitMQ" Version="7.2.4" />
+		<PackageReference Include="MassTransit.MongoDb" Version="7.2.4" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="Sentry" Version="3.11.1" />
 		<PackageReference Include="Sentry.AspNetCore" Version="3.11.1" />

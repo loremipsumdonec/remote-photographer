@@ -12,6 +12,7 @@ using RemotePhotographer.Features.Photographer.Queries;
 using RemotePhotographer.Features.Photographer.Commands;
 using Boilerplate.Features.MassTransit;
 using RemotePhotographer.Features.Gphoto2.Services;
+using MassTransit.MongoDbIntegration.MessageData;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -59,9 +60,20 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, configuration) =>
     {
-        configuration.UseTimeout(c => c.Timeout = TimeSpan.FromSeconds(120));
+        configuration.UseJsonSerializer();
 
-        configuration.Host(builder.Configuration.GetValue<string>("message.broker-service:parameters:host"), "/", h =>
+        configuration.UseMessageData(
+            new MongoDbMessageDataRepository(
+                builder.Configuration.GetValue<string>("message.broker-service:parameters:data.repository.connectionString"), 
+                builder.Configuration.GetValue<string>("message.broker-service:parameters:data.repository.database")
+            )
+        );
+        
+        configuration.UseTimeout(c => c.Timeout = TimeSpan.FromSeconds(120));
+        configuration.Host(
+            builder.Configuration.GetValue<string>("message.broker-service:parameters:host"),
+            builder.Configuration.GetValue<ushort>("message.broker-service:parameters:port"),
+             "/", h =>
         {
             h.Username(builder.Configuration.GetValue<string>("message.broker-service:parameters:username"));
             h.Password(builder.Configuration.GetValue<string>("message.broker-service:parameters:password"));

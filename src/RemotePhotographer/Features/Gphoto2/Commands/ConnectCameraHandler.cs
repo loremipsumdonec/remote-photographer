@@ -27,7 +27,7 @@ public class ConnectCameraHandler
         _dispatcher = dispatcher;
     }
 
-    public override Task<bool> ExecuteAsync(ConnectCamera query)
+    public override Task<bool> ExecuteAsync(ConnectCamera command)
     {
         lock(_manager.Door) 
         {
@@ -43,7 +43,7 @@ public class ConnectCameraHandler
                 nameof(CameraService.gp_camera_init)
             );
 
-            _manager.CameraContext = new CameraContext(context, camera);
+            _manager.CameraContext = new CameraContext(context, camera, command.Tags);
         }
 
         _dispatcher.Dispatch(new CameraConnected());
