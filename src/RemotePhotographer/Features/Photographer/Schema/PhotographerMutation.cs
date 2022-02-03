@@ -1,14 +1,15 @@
 using Boilerplate.Features.Core.Commands;
+using RemotePhotographer.Features.Auto.Models;
 using RemotePhotographer.Features.Photographer.Commands;
 
 namespace RemotePhotographer.Features.Photographer.Schema;
 
 public class PhotographerMutation
 {
-    public Task<bool> Connect(IEnumerable<string> tags, [Service] ICommandDispatcher dispatcher) 
+    public Task<bool> Connect(string cameraId, IEnumerable<string> tags, [Service] ICommandDispatcher dispatcher) 
     {
         return dispatcher.DispatchAsync(
-            new ConnectCamera(tags)
+            new ConnectCamera(cameraId, tags)
         );
     }
 
@@ -72,6 +73,20 @@ public class PhotographerMutation
     {
         return dispatcher.DispatchAsync(
             new StopCapturePreview()
+        );
+    }
+    
+    public Task<bool> StartSession(Session session, [Service] ICommandDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync(
+            new StartSession(session)
+        );
+    }
+
+    public Task<bool> StopSession([Service] ICommandDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync(
+            new StopSession()
         );
     }
 }

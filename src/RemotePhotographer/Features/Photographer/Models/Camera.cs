@@ -11,6 +11,7 @@ public class Camera
 
     public Camera(string name, string portName)
     {
+        CameraId = portName;
         Name = name;
         PortName = portName;
     }

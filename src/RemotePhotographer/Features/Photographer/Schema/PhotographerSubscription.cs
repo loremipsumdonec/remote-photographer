@@ -1,3 +1,4 @@
+using RemotePhotographer.Features.Auto.Events;
 using RemotePhotographer.Features.Photographer.Events;
 
 namespace RemotePhotographer.Features.Photographer.Schema;
@@ -30,4 +31,22 @@ public class PhotographerSubscription
 
     [Subscribe]
     public ISOChanged OnISOChanged([EventMessage] ISOChanged @event) => @event;
+
+    [Subscribe]
+    public SessionStarted OnSessionStarted([EventMessage] SessionStarted @event) => @event;
+
+    [Subscribe]
+    public SessionStopped OnSessionStopped([EventMessage] SessionStopped @event) => @event;
+
+    [Subscribe]
+    public SessionFinished OnSessionFinished([EventMessage] SessionFinished @event) => @event;
+
+    [Subscribe]
+    public SessionFailed OnSessionFailed([EventMessage] SessionFailed @event) => @event;
+
+    [Subscribe]
+    public ActionStarted OnActionStarted([EventMessage] ActionStarted @event) => @event;
+
+    [Subscribe]
+    public ActionFinished OnActionFinsihed([EventMessage] ActionFinished @event) => @event;
 }

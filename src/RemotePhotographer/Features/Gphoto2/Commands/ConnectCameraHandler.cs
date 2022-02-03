@@ -43,7 +43,12 @@ public class ConnectCameraHandler
                 nameof(CameraService.gp_camera_init)
             );
 
-            _manager.CameraContext = new CameraContext(context, camera, command.Tags);
+            _manager.CameraContext = new CameraContext(
+                command.CameraId, 
+                context, 
+                camera, 
+                command.Tags
+            );
         }
 
         _dispatcher.Dispatch(new CameraConnected());

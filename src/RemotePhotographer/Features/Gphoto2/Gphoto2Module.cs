@@ -1,5 +1,6 @@
 using Autofac;
 using Boilerplate.Features.Core.Config;
+using RemotePhotographer.Features.Auto.Services;
 using RemotePhotographer.Features.Gphoto2.Services;
 
 namespace RemotePhotographer.Features.Gphoto2;

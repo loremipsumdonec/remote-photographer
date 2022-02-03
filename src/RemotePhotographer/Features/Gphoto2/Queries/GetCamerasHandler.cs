@@ -13,10 +13,12 @@ public class GetCamerasHandler
     : QueryHandler<GetCameras>
 {
     private readonly IMethodValidator _validator;
+    private readonly ICameraContextManager _manager;
 
-    public GetCamerasHandler(IMethodValidator validator)
+    public GetCamerasHandler(IMethodValidator validator, ICameraContextManager manager)
     {
         _validator = validator;
+        _manager = manager;
     }
 
     public override Task<IModel> ExecuteAsync(GetCameras query)
@@ -60,7 +62,7 @@ public class GetCamerasHandler
         for(int index = 0; index < count; index++) 
         {
             _validator.Validate(
-                ListService.gp_list_get_name(list, index, out IntPtr namePointer), 
+                ListService.gp_list_get_name(list, index, out IntPtr namePointer),
                 nameof(ListService.gp_list_get_name)
             );
 
@@ -74,6 +76,11 @@ public class GetCamerasHandler
                 Marshal.PtrToStringAnsi(valuePointer)
             );
 
+            lock(_manager.Door) 
+            {
+                camera.Connected = camera.CameraId == _manager.CameraContext?.CameraId;
+            }
+            
             model.Add(camera);
         }
 

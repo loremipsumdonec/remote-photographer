@@ -13,6 +13,10 @@ using RemotePhotographer.Features.Photographer.Commands;
 using Boilerplate.Features.MassTransit;
 using RemotePhotographer.Features.Gphoto2.Services;
 using MassTransit.MongoDbIntegration.MessageData;
+using RemotePhotographer.Features.Auto.Services;
+using RemotePhotographer.Features.Auto.Schema;
+using RemotePhotographer.Features.Auto;
+using RemotePhotographer.Features.Auto.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -27,18 +31,21 @@ builder.Host.ConfigureContainer((ContainerBuilder containerBuilder) =>
     containerBuilder.RegisterModule(new MapperModule(builder.Configuration, assemblies));
     containerBuilder.RegisterModule(new ReactiveModule(builder.Configuration, assemblies));
     containerBuilder.RegisterModule(new MassTransitModule(builder.Configuration, assemblies));
-    containerBuilder.RegisterModule(new Gphoto2Module(builder.Configuration));    
+    containerBuilder.RegisterModule(new Gphoto2Module(builder.Configuration));
+    containerBuilder.RegisterModule(new AutoModule(builder.Configuration));        
 });
 
 builder.Services.AddControllers();
 builder.Services.AddInMemorySubscriptions();
 
 builder.Services.AddHostedService(p => p.GetRequiredService<CapturePreviewBackgroundService>());
+builder.Services.AddHostedService(p => p.GetRequiredService<SessionBackgroundService>());
 
 builder.Services.AddGraphQLServer()
     .AddQueryType<PhotographerQuery>()
     .AddMutationType<PhotographerMutation>()
     .AddSubscriptionType<PhotographerSubscription>()
+    .AddType<SessionInputSchemaType>()
     .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = true);
 
 builder.Services.AddMassTransit(x =>
@@ -49,6 +56,9 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<CommandConsumer<SetAperture>>();
     x.AddConsumer<CommandConsumer<SetISO>>();
     x.AddConsumer<CommandConsumer<SetShutterSpeed>>();
+
+    x.AddConsumer<CommandConsumer<StartSession>>();
+    x.AddConsumer<CommandConsumer<StopSession>>();
 
     x.AddConsumer<QueryConsumer<GetAperture>>();
     x.AddConsumer<QueryConsumer<GetCameras>>();

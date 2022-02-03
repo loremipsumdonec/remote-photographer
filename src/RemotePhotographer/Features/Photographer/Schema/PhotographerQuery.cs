@@ -20,13 +20,6 @@ public class PhotographerQuery
         );
     }
 
-    public Task<Camera> Camera([Service] IQueryDispatcher dispatcher) 
-    {
-        return dispatcher.DispatchAsync<Camera>(
-            new GetCamera()
-        );
-    }
-
     public Task<GetFilesModel> Files(string path, [Service] IQueryDispatcher dispatcher) 
     {
         return dispatcher.DispatchAsync<GetFilesModel>(
