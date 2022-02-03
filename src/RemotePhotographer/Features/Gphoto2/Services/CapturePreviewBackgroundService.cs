@@ -1,4 +1,3 @@
-
 using System.Runtime.InteropServices;
 using Boilerplate.Features.Reactive.Services;
 using RemotePhotographer.Features.Gphoto2.Services.Interop;
@@ -10,7 +9,7 @@ namespace RemotePhotographer.Features.Gphoto2.Services
         : BackgroundService
     {
         private object _door = new object();
-        private CancellationToken _token;
+        private CancellationTokenSource  _sessionCancellationTokenSource;
         private bool _started;
         private int _fps;
         private readonly ICameraContextManager _manager;
@@ -39,46 +38,54 @@ namespace RemotePhotographer.Features.Gphoto2.Services
                 return Task.CompletedTask;
             }
 
+            _sessionCancellationTokenSource = new();
             _started = true;
-            _token = new CancellationToken();
 
-            return base.StartAsync(_token);
+            return Task.CompletedTask;
         }
 
         public Task StopPreviewAsync() 
         {
-            _started = false;
-            return base.StopAsync(_token);
+            _sessionCancellationTokenSource.Cancel();
+            return Task.CompletedTask;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if(!_started) {
-                return;
-            }
-
-            IntPtr cameraFilePathPointer = CreateCameraFilePathPointer();
-
-            try 
+            while(true) 
             {
-                while(true) 
+                if(_started) 
                 {
-                    if(stoppingToken.IsCancellationRequested) 
-                    {
-                        return;
-                    }
+                     IntPtr cameraFilePathPointer = CreateCameraFilePathPointer();
 
-                    CapturePreviewImageWithCamera(cameraFilePathPointer);
-                    var previewImageData = GetPreviewImageData(cameraFilePathPointer);
-                    
-                    _dispatcher.Dispatch(new PreviewImageCaptured(previewImageData, GetTags()));
+                        try 
+                        {
+                            while(true) 
+                            {
+                                _sessionCancellationTokenSource.Token.ThrowIfCancellationRequested();
+                                stoppingToken.ThrowIfCancellationRequested();
 
-                    await DelayAsync();
+                                CapturePreviewImageWithCamera(cameraFilePathPointer);
+                                var previewImageData = GetPreviewImageData(cameraFilePathPointer);
+                                
+                                _dispatcher.Dispatch(new PreviewImageCaptured(
+                                    previewImageData, GetTags())
+                                );
+
+                                await DelayAsync();
+                            }
+                        }
+                        catch(Exception) 
+                        {
+
+                        }
+                        finally 
+                        {
+                            FreeCameraFilePathPointer(cameraFilePathPointer);
+                        }
                 }
-            }
-            finally 
-            {
-                FreeCameraFilePathPointer(cameraFilePathPointer);
+
+                await Task.Delay(1000);
             }
         }
 

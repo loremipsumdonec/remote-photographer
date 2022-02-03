@@ -18,5 +18,5 @@ public class PreviewImageCaptured
 
     public byte[] Data { get; set; }
 
-    public IEnumerable<string> Tags {get; set;}
+    public IEnumerable<string> Tags { get; set;}
 }
