@@ -39,7 +39,7 @@ public class CameraService
     public static extern int gp_camera_folder_list_folders(IntPtr camera, sbyte[] folder, IntPtr list, IntPtr context);
 
     [DllImport("gphoto2")]
-    public static extern int gp_camera_autodetect(IntPtr list, IntPtr context);
+    public static extern int gp_camera_autodetect(IntPtr cameraList, IntPtr context);
 
     [DllImport("gphoto2")]
     public static extern int gp_camera_get_port_info(IntPtr camera, out IntPtr info);

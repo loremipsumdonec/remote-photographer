@@ -15,7 +15,11 @@ public class Camera
         PortName = portName;
     }
 
+    public string CameraId { get; set; }
+
     public string Name { get; set; }      
+
+    public bool Connected { get; set; }
 
     public string PortName { get; set; }
 

@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Boilerplate.Features.Core;
 using Boilerplate.Features.Core.Queries;
 using RemotePhotographer.Features.Gphoto2.Extensions;
@@ -25,11 +26,31 @@ public class GetCameraHandler
     public override Task<IModel> ExecuteAsync(GetCamera query)
     {
         var model = new Camera();
+        LoadCameraId(model);
         LoadAbilities(model);
         LoadAbout(model);
         LoadSummary(model);
 
         return Task.FromResult((IModel)model);
+    }
+
+    private void LoadCameraId(Camera model) 
+    {
+        lock(_manager.Door) 
+        {
+            _manager.EnsureCameraContext();
+
+            _validator.Validate(CameraService.gp_camera_get_single_config(
+                _manager.CameraContext.Camera, "eosserialnumber", out IntPtr widget, _manager.CameraContext.Context
+            ), nameof(CameraService.gp_camera_get_single_config));
+
+            _validator.Validate(
+                WidgetService.gp_widget_get_value(widget, out IntPtr valuePointer), 
+                nameof(WidgetService.gp_widget_get_value)
+            );
+
+            model.CameraId = Marshal.PtrToStringAnsi(valuePointer);
+        }
     }
 
     private void LoadAbilities(Camera model) 
