@@ -38,7 +38,7 @@ builder.Host.ConfigureContainer((ContainerBuilder containerBuilder) =>
 builder.Services.AddControllers();
 builder.Services.AddInMemorySubscriptions();
 
-builder.Services.AddHostedService(p => p.GetRequiredService<CapturePreviewBackgroundService>());
+builder.Services.AddHostedService(p => p.GetRequiredService<PreviewBackgroundService>());
 builder.Services.AddHostedService(p => p.GetRequiredService<SessionBackgroundService>());
 
 builder.Services.AddGraphQLServer()
