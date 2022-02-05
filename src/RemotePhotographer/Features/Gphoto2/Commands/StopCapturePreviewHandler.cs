@@ -31,9 +31,7 @@ public class StopCapturePreviewHandler
 
     public override async Task<bool> ExecuteAsync(StopCapturePreview command)
     {
-        await _service.StopPreviewAsync();
-        CloseViewFinder();
-        
+        await _service.StopPreviewAsync();        
         return true;
     }
 

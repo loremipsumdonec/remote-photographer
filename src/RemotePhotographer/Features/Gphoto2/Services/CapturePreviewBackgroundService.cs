@@ -68,20 +68,22 @@ namespace RemotePhotographer.Features.Gphoto2.Services
                                 CapturePreviewImageWithCamera(cameraFilePathPointer);
                                 var previewImageData = GetPreviewImageData(cameraFilePathPointer);
                                 
+                                /*
                                 _dispatcher.Dispatch(new PreviewImageCaptured(
                                     previewImageData, GetTags())
                                 );
-
+                                */
                                 await DelayAsync();
                             }
                         }
                         catch(Exception) 
                         {
-
                         }
-                        finally 
+                        finally
                         {
+                            CloseViewFinder();
                             FreeCameraFilePathPointer(cameraFilePathPointer);
+                            _started = false;
                         }
                 }
 
@@ -152,7 +154,38 @@ namespace RemotePhotographer.Features.Gphoto2.Services
                 );
             }
         }
-    
+
+        private void CloseViewFinder() 
+        {
+            lock(_manager.Door) 
+            {
+                _manager.EnsureCameraContext();
+
+                _validator.Validate(
+                    CameraService.gp_camera_get_single_config(
+                        _manager.CameraContext.Camera, "viewfinder", out IntPtr widget, _manager.CameraContext.Context
+                    ), 
+                    nameof(CameraService.gp_camera_get_single_config)
+                );
+
+                IntPtr value = Marshal.StringToHGlobalAnsi("0");
+
+                _validator.Validate(
+                    WidgetService.gp_widget_set_value(widget, value), 
+                    nameof(WidgetService.gp_widget_set_value)
+                );
+
+                _validator.Validate(
+                    CameraService.gp_camera_set_single_config(
+                        _manager.CameraContext.Camera, "viewfinder", widget, _manager.CameraContext.Context
+                    ), 
+                    nameof(CameraService.gp_camera_set_single_config)
+                );
+
+                Marshal.FreeHGlobal(value);
+            }
+        }
+
         private IEnumerable<string> GetTags() 
         {
             lock(_manager.Door) {
