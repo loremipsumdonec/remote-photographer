@@ -13,6 +13,13 @@ public class PhotographerQuery
         );
     }
 
+    public Task<GetConfigsModel> Configs([Service] IQueryDispatcher dispatcher) 
+    {
+        return dispatcher.DispatchAsync<GetConfigsModel>(
+            new GetConfigs()
+        );
+    }
+
     public Task<GetCamerasModel> Cameras([Service] IQueryDispatcher dispatcher) 
     {
         return dispatcher.DispatchAsync<GetCamerasModel>(
