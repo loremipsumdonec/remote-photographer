@@ -50,6 +50,9 @@ public class CameraService
     [DllImport("gphoto2", CallingConvention=CallingConvention.Cdecl, CharSet=CharSet.Ansi)]
     public static extern int gp_camera_get_single_config(IntPtr camera, [MarshalAs(UnmanagedType.LPStr)] string name, out IntPtr cameraWidget, IntPtr context);
 
+    [DllImport("gphoto2")]
+    public static extern int gp_camera_list_config(IntPtr camera, IntPtr cameraList, IntPtr context);
+    
     [DllImport("gphoto2", CallingConvention=CallingConvention.Cdecl, CharSet=CharSet.Ansi)]
     public static extern int gp_camera_set_single_config(IntPtr camera, [MarshalAs(UnmanagedType.LPStr)] string name, IntPtr widget, IntPtr context);
 
@@ -64,4 +67,5 @@ public class CameraService
 
     [DllImport("gphoto2")]
     public static extern int gp_camera_get_abilities(IntPtr camera, out CameraAbilities abilities);
+
 }
