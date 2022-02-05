@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using RemotePhotographer.Features.Gphoto2.Models;
 
 namespace RemotePhotographer.Features.Gphoto2.Services.Interop;
 
@@ -6,6 +7,9 @@ public class WidgetService
 {
         [DllImport("gphoto2")]
         public static extern int gp_widget_new(int type, [MarshalAs(UnmanagedType.LPStr)] string label, out IntPtr widget);
+
+        [DllImport("gphoto2")]
+        public static extern int gp_widget_free(IntPtr widget);
 
         [DllImport("gphoto2")]
         public static extern int gp_widget_ref(IntPtr widget);
@@ -20,7 +24,7 @@ public class WidgetService
         public static extern int gp_widget_set_changed(IntPtr widget, int changed);
 
         [DllImport("gphoto2")]
-        public static extern int gp_widget_get_type(IntPtr widget, out int type);
+        public static extern int gp_widget_get_type(IntPtr widget, out CameraWidgetType type);
 
         [DllImport("gphoto2")]
         public static extern int gp_widget_get_value(IntPtr widget, out IntPtr value);

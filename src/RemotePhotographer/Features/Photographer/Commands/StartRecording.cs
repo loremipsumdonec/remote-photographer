@@ -2,10 +2,10 @@ using Boilerplate.Features.Core.Commands;
 
 namespace RemotePhotographer.Features.Photographer.Commands;
 
-public class StartCapturePreview
+public class StartRecording
     : Command
 {
-    public StartCapturePreview(int fps)
+    public StartRecording(int fps)
     {
         FPS = fps;
     }

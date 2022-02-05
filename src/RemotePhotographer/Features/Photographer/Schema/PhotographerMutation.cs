@@ -20,28 +20,35 @@ public class PhotographerMutation
         );
     }
 
-    public Task<bool> SetIso(string value, [Service] ICommandDispatcher dispatcher)
+    public Task<bool> ViewFinder(bool open, [Service] ICommandDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync(
+            new SetViewFinder(open)
+        );
+    }
+
+    public Task<bool> Iso(string value, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
             new SetISO(value)
         );
     }
 
-    public Task<bool> SetShutterSpeed(string value, [Service] ICommandDispatcher dispatcher)
+    public Task<bool> ShutterSpeed(string value, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
             new SetShutterSpeed(value)
         );
     }
 
-    public Task<bool> SetCaptureTarget(string value, [Service] ICommandDispatcher dispatcher)
+    public Task<bool> CaptureTarget(string value, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
             new SetCaptureTarget(value)
         );
     }
 
-    public Task<bool> SetImageFormat(string value, [Service] ICommandDispatcher dispatcher)
+    public Task<bool> ImageFormat(string value, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
             new SetImageFormat(value)
@@ -55,27 +62,34 @@ public class PhotographerMutation
         );
     }
 
-    public Task<bool> CapturePreviewImage([Service] ICommandDispatcher dispatcher)
+    public Task<bool> StartPreview(int fps, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new CapturePreviewImage()
+            new StartPreview(fps)
         );
     }
 
-    public Task<bool> StartCapturePreview(int fps, [Service] ICommandDispatcher dispatcher)
+    public Task<bool> StopPreview([Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new StartCapturePreview(fps)
-        );
-    }
-
-    public Task<bool> StopCapturePreview([Service] ICommandDispatcher dispatcher)
-    {
-        return dispatcher.DispatchAsync(
-            new StopCapturePreview()
+            new StopPreview()
         );
     }
     
+    public Task<bool> StartRecoding(int fps, [Service] ICommandDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync(
+            new StartRecording(fps)
+        );
+    }
+
+    public Task<bool> StopRecording([Service] ICommandDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync(
+            new StopRecording()
+        );
+    }
+
     public Task<bool> StartSession(Session session, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(

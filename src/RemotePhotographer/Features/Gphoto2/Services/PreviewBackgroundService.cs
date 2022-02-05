@@ -1,29 +1,34 @@
 using System.Runtime.InteropServices;
+using Boilerplate.Features.Core.Commands;
 using Boilerplate.Features.Reactive.Services;
 using RemotePhotographer.Features.Gphoto2.Services.Interop;
+using RemotePhotographer.Features.Photographer.Commands;
 using RemotePhotographer.Features.Photographer.Events;
 
 namespace RemotePhotographer.Features.Gphoto2.Services
 {
-    public class CapturePreviewBackgroundService
-        : BackgroundService
+    public class PreviewBackgroundService
+        : BackgroundService, IPreviewService, IRecordingService
     {
         private object _door = new object();
         private CancellationTokenSource  _sessionCancellationTokenSource;
         private bool _started;
+        private bool _recording;
         private int _fps;
         private readonly ICameraContextManager _manager;
         private readonly IMethodValidator _validator;
         private readonly IEventDispatcher _dispatcher;
-
-        public CapturePreviewBackgroundService(
+        private readonly ICommandDispatcher _commandDispatcher;
+        public PreviewBackgroundService(
             ICameraContextManager manager,
             IMethodValidator validator, 
-            IEventDispatcher dispatcher)
+            IEventDispatcher dispatcher,
+            ICommandDispatcher commandDispatcher)
         {
             _manager = manager;
             _validator = validator;
             _dispatcher = dispatcher;
+            _commandDispatcher = commandDispatcher;
         }
 
         public Task StartPreviewAsync(int fps) 
@@ -42,6 +47,26 @@ namespace RemotePhotographer.Features.Gphoto2.Services
             _started = true;
 
             return Task.CompletedTask;
+        }
+
+        public async Task StartRecodingAsync(int fps) 
+        {
+            await StartPreviewAsync(fps);
+
+            lock(_door) 
+            {
+                _recording = true;
+            }
+        }
+
+        public async Task StopRecodingAsync() 
+        {   
+            lock(_door) 
+            {
+                _recording = false;
+            }
+
+            await StopPreviewAsync();
         }
 
         public Task StopPreviewAsync() 
@@ -68,11 +93,22 @@ namespace RemotePhotographer.Features.Gphoto2.Services
                                 CapturePreviewImageWithCamera(cameraFilePathPointer);
                                 var previewImageData = GetPreviewImageData(cameraFilePathPointer);
                                 
-                                /*
-                                _dispatcher.Dispatch(new PreviewImageCaptured(
-                                    previewImageData, GetTags())
-                                );
-                                */
+                                lock(_door) 
+                                {
+                                    if(_recording) 
+                                    {
+                                        _dispatcher.Dispatch(new VideoImageCaptured(
+                                            previewImageData, GetTags())
+                                        );
+                                    } 
+                                    else 
+                                    {
+                                        _dispatcher.Dispatch(new PreviewImageCaptured(
+                                            previewImageData, GetTags())
+                                        );
+                                    }
+                                }
+                                
                                 await DelayAsync();
                             }
                         }
@@ -81,7 +117,7 @@ namespace RemotePhotographer.Features.Gphoto2.Services
                         }
                         finally
                         {
-                            CloseViewFinder();
+                            await CloseViewFinderAsync();
                             FreeCameraFilePathPointer(cameraFilePathPointer);
                             _started = false;
                         }
@@ -155,35 +191,9 @@ namespace RemotePhotographer.Features.Gphoto2.Services
             }
         }
 
-        private void CloseViewFinder() 
+        private async Task CloseViewFinderAsync() 
         {
-            lock(_manager.Door) 
-            {
-                _manager.EnsureCameraContext();
-
-                _validator.Validate(
-                    CameraService.gp_camera_get_single_config(
-                        _manager.CameraContext.Camera, "viewfinder", out IntPtr widget, _manager.CameraContext.Context
-                    ), 
-                    nameof(CameraService.gp_camera_get_single_config)
-                );
-
-                IntPtr value = Marshal.StringToHGlobalAnsi("0");
-
-                _validator.Validate(
-                    WidgetService.gp_widget_set_value(widget, value), 
-                    nameof(WidgetService.gp_widget_set_value)
-                );
-
-                _validator.Validate(
-                    CameraService.gp_camera_set_single_config(
-                        _manager.CameraContext.Camera, "viewfinder", widget, _manager.CameraContext.Context
-                    ), 
-                    nameof(CameraService.gp_camera_set_single_config)
-                );
-
-                Marshal.FreeHGlobal(value);
-            }
+            await _commandDispatcher.DispatchAsync(new SetViewFinder(false));
         }
 
         private IEnumerable<string> GetTags() 

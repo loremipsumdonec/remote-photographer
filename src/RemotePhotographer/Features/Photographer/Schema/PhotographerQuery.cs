@@ -41,6 +41,20 @@ public class PhotographerQuery
         );
     }
 
+    public Task<ViewFinder> ViewFinder([Service] IQueryDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync<ViewFinder>(
+            new GetViewFinder()
+        );
+    }
+
+    public Task<BatteryLevel> BatteryLevel([Service] IQueryDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync<BatteryLevel>(
+            new GetBatteryLevel()
+        );
+    }
+
     public Task<Aperture> Aperture([Service] IQueryDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync<Aperture>(

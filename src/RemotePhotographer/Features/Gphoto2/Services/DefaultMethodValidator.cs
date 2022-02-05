@@ -16,6 +16,8 @@ namespace RemotePhotographer.Features.Gphoto2.Services
 
             switch(status) 
             {
+                case -2:
+                    throw new Gphoto2Exception(status, $"{defaultMessage}, bad parameters.");
                 case -52:
                     throw new Gphoto2Exception(status, $"{defaultMessage}, error when trying to find USB device.");
                 case -53:
