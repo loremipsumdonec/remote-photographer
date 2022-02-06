@@ -2,6 +2,6 @@
 {
     public interface IMethodValidator
     {
-        void Validate(int status, string name);
+        int Validate(int status, string name);
     }
 }

@@ -29,4 +29,7 @@ public class PortInfoListService
     [DllImport("gphoto2")]
     public static extern int gp_port_info_get_type(IntPtr portInfoList, out GPPortType type);
 
+    [DllImport("gphoto2")]
+    public static extern int gp_port_info_list_lookup_path(IntPtr portInfoList, [MarshalAs(UnmanagedType.LPStr)] string path);
+
 }

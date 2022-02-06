@@ -5,11 +5,11 @@ namespace RemotePhotographer.Features.Gphoto2.Services
     public class DefaultMethodValidator
         : IMethodValidator
     {
-        public void Validate(int status, string name) 
+        public int Validate(int status, string name) 
         {
-            if(status == 0)
+            if(status > -1)
             {
-                return;
+                return status;
             }
 
             string defaultMessage = $"method {name} failed with status {status}";
@@ -24,6 +24,10 @@ namespace RemotePhotographer.Features.Gphoto2.Services
                     throw new Gphoto2Exception(status, $"{defaultMessage}, error when trying to claim the USB device.");
                 case -105:
                     throw new Gphoto2Exception(status, $"{defaultMessage}, specified camera model was not found.");
+                case -108:
+                    throw new Gphoto2Exception(status, $"{defaultMessage}, specified file was not found.");
+                case -110:
+                    throw new Gphoto2Exception(status, $"{defaultMessage}, the camera is already busy.");
                 default:
                     throw new Gphoto2Exception(status, defaultMessage);
             }

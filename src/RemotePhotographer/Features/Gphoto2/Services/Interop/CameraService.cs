@@ -68,4 +68,6 @@ public class CameraService
     [DllImport("gphoto2")]
     public static extern int gp_camera_get_abilities(IntPtr camera, out CameraAbilities abilities);
 
+    [DllImport("gphoto2")]
+    public static extern int gp_camera_set_abilities(IntPtr camera, CameraAbilities abilities);
 }
