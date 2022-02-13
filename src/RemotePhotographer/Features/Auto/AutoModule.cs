@@ -16,6 +16,7 @@ public class AutoModule
     protected override void Load(ContainerBuilder builder)
     {
         builder.RegisterType<SessionBackgroundService>()
+            .AsImplementedInterfaces()
             .SingleInstance();
     }
 }
