@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Boilerplate.Features.Core.Commands;
 using Boilerplate.Features.Reactive.Services;
@@ -85,6 +86,12 @@ namespace RemotePhotographer.Features.Gphoto2.Services
 
                         try 
                         {
+                            int frames = 0;
+                            Stopwatch stopWatch = new Stopwatch();
+                            stopWatch.Start();
+
+                            var tags = new List<string>(_manager.CameraContext.Tags);
+
                             while(true) 
                             {
                                 _sessionCancellationTokenSource.Token.ThrowIfCancellationRequested();
@@ -95,20 +102,29 @@ namespace RemotePhotographer.Features.Gphoto2.Services
                                 
                                 lock(_door) 
                                 {
+                                    frames++;
+
                                     if(_recording) 
                                     {
                                         _dispatcher.Dispatch(new VideoImageCaptured(
-                                            previewImageData, GetTags())
+                                            previewImageData, tags)
                                         );
                                     } 
                                     else 
                                     {
                                         _dispatcher.Dispatch(new PreviewImageCaptured(
-                                            previewImageData, GetTags())
+                                            previewImageData, tags)
                                         );
                                     }
                                 }
                                 
+                                if(stopWatch.ElapsedMilliseconds > 5000 && frames > 0) {
+                                    Console.WriteLine($"{frames}/({stopWatch.ElapsedMilliseconds}/{1000}) = {frames/(stopWatch.ElapsedMilliseconds/1000)} ({_fps})");
+
+                                    frames = 0;
+                                    stopWatch.Restart();
+                                }
+
                                 await DelayAsync();
                             }
                         }
@@ -194,19 +210,6 @@ namespace RemotePhotographer.Features.Gphoto2.Services
         private async Task CloseViewFinderAsync() 
         {
             await _commandDispatcher.DispatchAsync(new SetViewFinder(false));
-        }
-
-        private IEnumerable<string> GetTags() 
-        {
-            lock(_manager.Door) {
-
-                _manager.EnsureCameraContext();
-
-                var tags = new List<string>(_manager.CameraContext.Tags);
-                tags.Add("preview");
-
-                return tags;
-            }        
         }
     }
 }

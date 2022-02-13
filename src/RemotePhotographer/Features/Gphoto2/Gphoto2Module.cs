@@ -27,7 +27,6 @@ public class Gphoto2Module
         ).SingleInstance();
 
         builder.RegisterType<PreviewBackgroundService>()
-            .AsSelf()
             .AsImplementedInterfaces()
             .SingleInstance();
     }
