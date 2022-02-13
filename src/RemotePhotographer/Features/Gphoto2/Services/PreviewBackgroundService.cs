@@ -119,7 +119,7 @@ namespace RemotePhotographer.Features.Gphoto2.Services
                                 }
                                 
                                 if(stopWatch.ElapsedMilliseconds > 5000 && frames > 0) {
-                                    Console.WriteLine($"{frames}/({stopWatch.ElapsedMilliseconds}/{1000}) = {frames/(stopWatch.ElapsedMilliseconds/1000)} ({_fps})");
+                                    Console.WriteLine($"{DateTime.Now} {Thread.CurrentThread.ManagedThreadId} {frames}/({stopWatch.ElapsedMilliseconds}/{1000}) = {frames/(stopWatch.ElapsedMilliseconds/1000)} ({_fps})");
 
                                     frames = 0;
                                     stopWatch.Restart();
