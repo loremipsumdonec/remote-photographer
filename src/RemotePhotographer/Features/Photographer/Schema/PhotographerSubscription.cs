@@ -12,12 +12,6 @@ public class PhotographerSubscription
     public CameraDisconnected OnCameraDisconnected([EventMessage] CameraDisconnected @event) => @event;
 
     [Subscribe]
-    public ImageCaptured OnImageCaptured([EventMessage] ImageCaptured @event) => @event;
-
-    [Subscribe]
-    public PreviewImageCaptured OnPreviewImageCaptured([EventMessage] PreviewImageCaptured @event) => @event;
-
-    [Subscribe]
     public ApertureChanged OnApertureChanged([EventMessage] ApertureChanged @event) => @event;
 
     [Subscribe]

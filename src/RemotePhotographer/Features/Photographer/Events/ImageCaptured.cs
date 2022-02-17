@@ -1,5 +1,6 @@
 
 using Boilerplate.Features.Reactive.Events;
+using MassTransit;
 
 namespace RemotePhotographer.Features.Photographer.Events;
 
@@ -10,7 +11,7 @@ public class ImageCaptured
     {
     }
 
-    public ImageCaptured(string path, byte[] data, IEnumerable<string> tags)
+    public ImageCaptured(string path, MessageData<byte[]> data, IEnumerable<string> tags)
     {
         Path = path;
         Data = data;
@@ -19,7 +20,7 @@ public class ImageCaptured
 
     public string Path { get; set; }
 
-    public byte[] Data { get; set; }
+    public MessageData<byte[]> Data { get; set; }
 
     public IEnumerable<string> Tags {get; set;}
 }

@@ -11,12 +11,11 @@ using RemotePhotographer.Features.Photographer.Schema;
 using RemotePhotographer.Features.Photographer.Queries;
 using RemotePhotographer.Features.Photographer.Commands;
 using Boilerplate.Features.MassTransit;
-using RemotePhotographer.Features.Gphoto2.Services;
 using MassTransit.MongoDbIntegration.MessageData;
-using RemotePhotographer.Features.Auto.Services;
 using RemotePhotographer.Features.Auto.Schema;
 using RemotePhotographer.Features.Auto;
 using RemotePhotographer.Features.Auto.Models;
+using MassTransit.MessageData;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -32,7 +31,15 @@ builder.Host.ConfigureContainer((ContainerBuilder containerBuilder) =>
     containerBuilder.RegisterModule(new ReactiveModule(builder.Configuration, assemblies));
     containerBuilder.RegisterModule(new MassTransitModule(builder.Configuration, assemblies));
     containerBuilder.RegisterModule(new Gphoto2Module(builder.Configuration));
-    containerBuilder.RegisterModule(new AutoModule(builder.Configuration));        
+    containerBuilder.RegisterModule(new AutoModule(builder.Configuration));
+    
+    containerBuilder.RegisterInstance<IMessageDataRepository>(
+        new MongoDbMessageDataRepository(
+                builder.Configuration.GetValue<string>("message.broker-service:parameters:data.repository.connectionString"), 
+                builder.Configuration.GetValue<string>("message.broker-service:parameters:data.repository.database")
+            )  
+    ).SingleInstance();
+            
 });
 
 builder.Services.AddControllers();
@@ -70,10 +77,7 @@ builder.Services.AddMassTransit(x =>
         configuration.UseJsonSerializer();
 
         configuration.UseMessageData(
-            new MongoDbMessageDataRepository(
-                builder.Configuration.GetValue<string>("message.broker-service:parameters:data.repository.connectionString"), 
-                builder.Configuration.GetValue<string>("message.broker-service:parameters:data.repository.database")
-            )
+            context.GetRequiredService<IMessageDataRepository>()
         );
         
         configuration.UseTimeout(c => c.Timeout = TimeSpan.FromSeconds(120));

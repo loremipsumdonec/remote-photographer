@@ -9,6 +9,8 @@ using RemotePhotographer.Features.Gphoto2.Models;
 using RemotePhotographer.Features.Gphoto2.Extensions;
 using Boilerplate.Features.Core.Queries;
 using RemotePhotographer.Features.Photographer.Queries;
+using MassTransit.MessageData;
+using MassTransit;
 
 namespace RemotePhotographer.Features.Gphoto2.Commands;
 
@@ -21,16 +23,20 @@ public class CaptureImageHandler
     private readonly IMethodValidator _validator;
     private readonly IQueryDispatcher _queryDispatcher;
 
+    private readonly IMessageDataRepository _messageDataRepository;
+
     public CaptureImageHandler(
         ICameraContextManager manager,
         IEventDispatcher dispatcher,
-        IMethodValidator validator, 
-        IQueryDispatcher queryDispatcher)
+        IMethodValidator validator,
+        IQueryDispatcher queryDispatcher, 
+        IMessageDataRepository messageDataRepository)
     {
         _manager = manager;
         _dispatcher = dispatcher;
         _validator = validator;
         _queryDispatcher = queryDispatcher;
+        _messageDataRepository = messageDataRepository;
     }
 
     public override async Task<bool> ExecuteAsync(CaptureImage command)
@@ -38,7 +44,9 @@ public class CaptureImageHandler
         string imageFile = CaptureImageWithCamera();
         var image = await CreateImageFromFileAsync(imageFile);
 
-        _dispatcher.Dispatch(new ImageCaptured(imageFile, image.Data, GetTags()));
+        var messageData = await _messageDataRepository.PutBytes(image.Data);
+
+        _dispatcher.Dispatch(new ImageCaptured(imageFile, messageData, GetTags()));
 
         return true;
     }

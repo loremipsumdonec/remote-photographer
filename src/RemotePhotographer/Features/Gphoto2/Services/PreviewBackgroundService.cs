@@ -2,6 +2,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Boilerplate.Features.Core.Commands;
 using Boilerplate.Features.Reactive.Services;
+using MassTransit;
+using MassTransit.MessageData;
 using RemotePhotographer.Features.Gphoto2.Services.Interop;
 using RemotePhotographer.Features.Photographer.Commands;
 using RemotePhotographer.Features.Photographer.Events;
@@ -20,16 +22,20 @@ namespace RemotePhotographer.Features.Gphoto2.Services
         private readonly IMethodValidator _validator;
         private readonly IEventDispatcher _dispatcher;
         private readonly ICommandDispatcher _commandDispatcher;
+        private readonly IMessageDataRepository _messageDataRepository;
+
         public PreviewBackgroundService(
             ICameraContextManager manager,
-            IMethodValidator validator, 
+            IMethodValidator validator,
             IEventDispatcher dispatcher,
-            ICommandDispatcher commandDispatcher)
+            ICommandDispatcher commandDispatcher,
+            IMessageDataRepository messageDataRepository)
         {
             _manager = manager;
             _validator = validator;
             _dispatcher = dispatcher;
             _commandDispatcher = commandDispatcher;
+            _messageDataRepository = messageDataRepository;
         }
 
         public Task StartPreviewAsync(int fps) 
@@ -84,59 +90,59 @@ namespace RemotePhotographer.Features.Gphoto2.Services
                 {
                      IntPtr cameraFilePathPointer = CreateCameraFilePathPointer();
 
-                        try 
+                    try 
+                    {
+                        int frames = 0;
+                        Stopwatch stopWatch = new Stopwatch();
+                        stopWatch.Start();
+
+                        var tags = new List<string>(_manager.CameraContext.Tags);
+
+                        while(true) 
                         {
-                            int frames = 0;
-                            Stopwatch stopWatch = new Stopwatch();
-                            stopWatch.Start();
+                            _sessionCancellationTokenSource.Token.ThrowIfCancellationRequested();
+                            stoppingToken.ThrowIfCancellationRequested();
 
-                            var tags = new List<string>(_manager.CameraContext.Tags);
-
-                            while(true) 
+                            CapturePreviewImageWithCamera(cameraFilePathPointer);
+                            var previewImageData = await GetPreviewImageData(cameraFilePathPointer);
+                            
+                            lock(_door) 
                             {
-                                _sessionCancellationTokenSource.Token.ThrowIfCancellationRequested();
-                                stoppingToken.ThrowIfCancellationRequested();
+                                frames++;
 
-                                CapturePreviewImageWithCamera(cameraFilePathPointer);
-                                var previewImageData = GetPreviewImageData(cameraFilePathPointer);
-                                
-                                lock(_door) 
+                                if(_recording) 
                                 {
-                                    frames++;
-
-                                    if(_recording) 
-                                    {
-                                        _dispatcher.Dispatch(new VideoImageCaptured(
-                                            previewImageData, tags)
-                                        );
-                                    } 
-                                    else 
-                                    {
-                                        _dispatcher.Dispatch(new PreviewImageCaptured(
-                                            previewImageData, tags)
-                                        );
-                                    }
+                                    _dispatcher.Dispatch(
+                                        new VideoImageCaptured(previewImageData, tags)
+                                    );
+                                } 
+                                else 
+                                {
+                                    _dispatcher.Dispatch(
+                                        new PreviewImageCaptured(previewImageData, tags)
+                                    );
                                 }
-                                
-                                if(stopWatch.ElapsedMilliseconds > 5000 && frames > 0) {
-                                    Console.WriteLine($"{DateTime.Now} {Thread.CurrentThread.ManagedThreadId} {frames}/({stopWatch.ElapsedMilliseconds}/{1000}) = {frames/(stopWatch.ElapsedMilliseconds/1000)} ({_fps})");
+                            }                            
+                            
+                            if(stopWatch.ElapsedMilliseconds > 5000 && frames > 0) {
+                                Console.WriteLine($"{DateTime.Now} {Thread.CurrentThread.ManagedThreadId} {frames}/({stopWatch.ElapsedMilliseconds}/{1000}) = {frames/(stopWatch.ElapsedMilliseconds/1000)} ({_fps})");
 
-                                    frames = 0;
-                                    stopWatch.Restart();
-                                }
-
-                                await DelayAsync();
+                                frames = 0;
+                                stopWatch.Restart();
                             }
+
+                            await DelayAsync();
                         }
-                        catch(Exception) 
-                        {
-                        }
-                        finally
-                        {
-                            await CloseViewFinderAsync();
-                            FreeCameraFilePathPointer(cameraFilePathPointer);
-                            _started = false;
-                        }
+                    }
+                    catch(Exception) 
+                    {
+                    }
+                    finally
+                    {
+                        await CloseViewFinderAsync();
+                        FreeCameraFilePathPointer(cameraFilePathPointer);
+                        _started = false;
+                    }
                 }
 
                 await Task.Delay(1000);
@@ -179,7 +185,7 @@ namespace RemotePhotographer.Features.Gphoto2.Services
             );
         }
 
-        private byte[] GetPreviewImageData(IntPtr cameraFilePath)
+        private async Task<MessageData<byte[]>> GetPreviewImageData(IntPtr cameraFilePath)
         {
             _validator.Validate(
                 FileService.gp_file_get_data_and_size(cameraFilePath, out IntPtr data, out ulong size),
@@ -189,7 +195,8 @@ namespace RemotePhotographer.Features.Gphoto2.Services
             byte[] previewImageData = new byte[size];
             Marshal.Copy(data, previewImageData, 0, previewImageData.Length);
 
-            return previewImageData;
+            var messageData = await _messageDataRepository.PutBytes(previewImageData);
+            return  messageData;
         }
 
         private void CapturePreviewImageWithCamera(IntPtr cameraFilePath)
