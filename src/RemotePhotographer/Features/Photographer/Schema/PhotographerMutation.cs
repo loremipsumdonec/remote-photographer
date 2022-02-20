@@ -20,6 +20,13 @@ public class PhotographerMutation
         );
     }
 
+    public Task<bool> Aperture(string cameraId, string value, [Service] ICommandDispatcher dispatcher)
+    {
+        return dispatcher.DispatchAsync(
+            new SetAperture(cameraId, value)
+        );
+    }
+
     public Task<bool> Iso(string cameraId, string value, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
