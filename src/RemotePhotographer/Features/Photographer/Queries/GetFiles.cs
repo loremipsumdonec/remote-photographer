@@ -1,6 +1,5 @@
 using Boilerplate.Features.Core;
 using Boilerplate.Features.Core.Queries;
-using RemotePhotographer.Features.Photographer.Models;
 
 namespace RemotePhotographer.Features.Photographer.Queries;
 
@@ -11,10 +10,13 @@ public class GetFiles
     {
     }
 
-    public GetFiles(string path)
+    public GetFiles(string cameraId, string path)
     {
+        CameraId = cameraId;
         Path = path;
     }
+
+    public string CameraId { get; set; }
 
     public string Path { get; set; }
 }

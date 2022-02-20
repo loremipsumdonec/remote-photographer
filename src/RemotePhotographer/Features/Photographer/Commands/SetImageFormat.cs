@@ -9,10 +9,13 @@ public class SetImageFormat
     {
     }
 
-    public SetImageFormat(string value)
+    public SetImageFormat(string cameraId, string value)
     {
+        CameraId = cameraId;
         Value = value;
     }
+
+    public string CameraId { get; set; }
 
     public string Value { get; set; }
 }

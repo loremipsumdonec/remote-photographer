@@ -42,7 +42,7 @@ public class CaptureImageHandler
     public override async Task<bool> ExecuteAsync(CaptureImage command)
     {
         string imageFile = CaptureImageWithCamera();
-        var image = await CreateImageFromFileAsync(imageFile);
+        var image = await CreateImageFromFileAsync(command.CameraId, imageFile);
 
         var messageData = await _messageDataRepository.PutBytes(image.Data);
 
@@ -86,8 +86,8 @@ public class CaptureImageHandler
         }
     }
     
-    private async Task<GetImageModel> CreateImageFromFileAsync(string imageFile) 
+    private async Task<GetImageModel> CreateImageFromFileAsync(string cameraId, string imageFile) 
     {
-        return await _queryDispatcher.DispatchAsync<GetImageModel>(new GetImage(imageFile));
+        return await _queryDispatcher.DispatchAsync<GetImageModel>(new GetImage(cameraId, imageFile));
     }
 }

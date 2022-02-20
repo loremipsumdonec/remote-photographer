@@ -13,10 +13,10 @@ public class PhotographerQuery
         );
     }
 
-    public Task<GetConfigsModel> Configs([Service] IQueryDispatcher dispatcher) 
+    public Task<GetConfigsModel> Configs(string cameraId, [Service] IQueryDispatcher dispatcher) 
     {
         return dispatcher.DispatchAsync<GetConfigsModel>(
-            new GetConfigs()
+            new GetConfigs(cameraId)
         );
     }
 
@@ -27,66 +27,59 @@ public class PhotographerQuery
         );
     }
 
-    public Task<GetFilesModel> Files(string path, [Service] IQueryDispatcher dispatcher) 
+    public Task<GetFilesModel> Files(string cameraId, string path, [Service] IQueryDispatcher dispatcher) 
     {
         return dispatcher.DispatchAsync<GetFilesModel>(
-            new GetFiles(path)
+            new GetFiles(cameraId, path)
         );
     }
 
-    public Task<GetFoldersModel> Folders(string path, [Service] IQueryDispatcher dispatcher) 
+    public Task<GetFoldersModel> Folders(string cameraId, string path, [Service] IQueryDispatcher dispatcher) 
     {
         return dispatcher.DispatchAsync<GetFoldersModel>(
-            new GetFolders(path)
+            new GetFolders(cameraId, path)
         );
     }
 
-    public Task<ViewFinder> ViewFinder([Service] IQueryDispatcher dispatcher)
-    {
-        return dispatcher.DispatchAsync<ViewFinder>(
-            new GetViewFinder()
-        );
-    }
-
-    public Task<BatteryLevel> BatteryLevel([Service] IQueryDispatcher dispatcher)
+    public Task<BatteryLevel> BatteryLevel(string cameraId, [Service] IQueryDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync<BatteryLevel>(
-            new GetBatteryLevel()
+            new GetBatteryLevel(cameraId)
         );
     }
 
-    public Task<Aperture> Aperture([Service] IQueryDispatcher dispatcher)
+    public Task<Aperture> Aperture(string cameraId, [Service] IQueryDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync<Aperture>(
-            new GetAperture()
+            new GetAperture(cameraId)
         );
     }
 
-    public Task<ISO> Iso([Service] IQueryDispatcher dispatcher)
+    public Task<ISO> Iso(string cameraId, [Service] IQueryDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync<ISO>(
-            new GetISO()
+            new GetISO(cameraId)
         );
     }
 
-    public Task<ShutterSpeed> ShutterSpeed([Service] IQueryDispatcher dispatcher)
+    public Task<ShutterSpeed> ShutterSpeed(string cameraId, [Service] IQueryDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync<ShutterSpeed>(
-            new GetShutterSpeed()
+            new GetShutterSpeed(cameraId)
         );
     }
 
-    public Task<CaptureTarget> CaptureTarget([Service] IQueryDispatcher dispatcher)
+    public Task<CaptureTarget> CaptureTarget(string cameraId, [Service] IQueryDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync<CaptureTarget>(
-            new GetCaptureTarget()
+            new GetCaptureTarget(cameraId)
         );
     }
 
-        public Task<ImageFormat> ImageFormat([Service] IQueryDispatcher dispatcher)
+        public Task<ImageFormat> ImageFormat(string cameraId, [Service] IQueryDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync<ImageFormat>(
-            new GetImageFormat()
+            new GetImageFormat(cameraId)
         );
     }
 }

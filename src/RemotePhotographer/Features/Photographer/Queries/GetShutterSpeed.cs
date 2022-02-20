@@ -1,10 +1,14 @@
-using Boilerplate.Features.Core;
 using Boilerplate.Features.Core.Queries;
-using RemotePhotographer.Features.Photographer.Models;
 
 namespace RemotePhotographer.Features.Photographer.Queries;
 
 public class GetShutterSpeed 
     : Query
 {
+    public GetShutterSpeed(string cameraId)
+    {
+        CameraId = cameraId;
+    }
+
+    public string CameraId { get; set; }
 }

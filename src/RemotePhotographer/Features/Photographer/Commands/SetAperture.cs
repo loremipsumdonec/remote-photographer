@@ -9,10 +9,13 @@ public class SetAperture
     {
     }
 
-    public SetAperture(string value)
+    public SetAperture(string cameraId, string value)
     {
+        CameraId = cameraId;
         Value = value;
     }
+
+    public string CameraId { get; set; }
 
     public string Value { get; set; }
 }

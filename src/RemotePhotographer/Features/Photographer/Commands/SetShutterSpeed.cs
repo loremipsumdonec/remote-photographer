@@ -9,10 +9,13 @@ public class SetShutterSpeed
     {
     }
 
-    public SetShutterSpeed(string value)
+    public SetShutterSpeed(string cameraId, string value)
     {
+        CameraId = cameraId;
         Value = value;
     }
+
+    public string CameraId { get; set; }
 
     public string Value { get; set; }
 }

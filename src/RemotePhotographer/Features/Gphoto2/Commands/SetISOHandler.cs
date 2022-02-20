@@ -35,7 +35,7 @@ public class SetISOHandler
 
     public override async Task<bool> ExecuteAsync(SetISO command)
     {
-        var iso = await GetISOAsync();
+        var iso = await GetISOAsync(command);
 
         if(iso.Current == command.Value) 
         {
@@ -55,9 +55,9 @@ public class SetISOHandler
         return true;
     }
 
-    private Task<ISO> GetISOAsync() 
+    private Task<ISO> GetISOAsync(SetISO command) 
     {
-        return _queryDispatcher.DispatchAsync<ISO>(new GetISO());
+        return _queryDispatcher.DispatchAsync<ISO>(new GetISO(command.CameraId));
     }
 
     private bool Validate(SetISO command, ISO iso)

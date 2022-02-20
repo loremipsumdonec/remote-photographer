@@ -35,7 +35,7 @@ public class SetImageFormatHandler
 
     public override async Task<bool> ExecuteAsync(SetImageFormat command)
     {
-        var imageFormat = await GetImageFormatAsync();
+        var imageFormat = await GetImageFormatAsync(command);
 
         if(imageFormat.Current == command.Value) 
         {
@@ -55,9 +55,9 @@ public class SetImageFormatHandler
         return true;
     }
 
-    private Task<ImageFormat> GetImageFormatAsync() 
+    private Task<ImageFormat> GetImageFormatAsync(SetImageFormat command) 
     {
-        return _queryDispatcher.DispatchAsync<ImageFormat>(new GetImageFormat());
+        return _queryDispatcher.DispatchAsync<ImageFormat>(new GetImageFormat(command.CameraId));
     }
 
     private bool Validate(SetImageFormat command, ImageFormat imageFormat)

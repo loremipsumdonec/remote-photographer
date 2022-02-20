@@ -35,7 +35,7 @@ public class SetShutterSpeedHandler
 
     public override async Task<bool> ExecuteAsync(SetShutterSpeed command)
     {
-        var shutterSpeed = await GetShutterSpeedAsync();
+        var shutterSpeed = await GetShutterSpeedAsync(command);
 
         if(shutterSpeed.Current == command.Value) 
         {
@@ -55,9 +55,9 @@ public class SetShutterSpeedHandler
         return true;
     }
 
-    private Task<ShutterSpeed> GetShutterSpeedAsync() 
+    private Task<ShutterSpeed> GetShutterSpeedAsync(SetShutterSpeed command) 
     {
-        return _queryDispatcher.DispatchAsync<ShutterSpeed>(new GetShutterSpeed());
+        return _queryDispatcher.DispatchAsync<ShutterSpeed>(new GetShutterSpeed(command.CameraId));
     }
 
     private bool Validate(SetShutterSpeed command, ShutterSpeed shutterSpeed)

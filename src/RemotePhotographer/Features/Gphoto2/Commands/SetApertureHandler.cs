@@ -35,7 +35,7 @@ public class SetApertureHandler
 
     public override async Task<bool> ExecuteAsync(SetAperture command)
     {
-        var aperture = await GetApertureAsync();
+        var aperture = await GetApertureAsync(command);
 
         if(aperture.Current == command.Value) 
         {
@@ -55,9 +55,9 @@ public class SetApertureHandler
         return true;
     }
 
-    private Task<Aperture> GetApertureAsync() 
+    private Task<Aperture> GetApertureAsync(SetAperture command) 
     {
-        return _queryDispatcher.DispatchAsync<Aperture>(new GetAperture());
+        return _queryDispatcher.DispatchAsync<Aperture>(new GetAperture(command.CameraId));
     }
 
     private bool Validate(SetAperture command, Aperture aperture)

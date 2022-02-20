@@ -35,7 +35,7 @@ public class SetCaptureTargetHandler
 
     public override async Task<bool> ExecuteAsync(SetCaptureTarget command)
     {
-        var captureTarget = await GetCaptureTargetAsync();
+        var captureTarget = await GetCaptureTargetAsync(command);
 
         if(captureTarget.Current == command.Value) 
         {
@@ -55,9 +55,9 @@ public class SetCaptureTargetHandler
         return true;
     }
 
-    private Task<CaptureTarget> GetCaptureTargetAsync() 
+    private Task<CaptureTarget> GetCaptureTargetAsync(SetCaptureTarget command) 
     {
-        return _queryDispatcher.DispatchAsync<CaptureTarget>(new GetCaptureTarget());
+        return _queryDispatcher.DispatchAsync<CaptureTarget>(new GetCaptureTarget(command.CameraId));
     }
 
     private bool Validate(SetCaptureTarget command, CaptureTarget captureTarget)

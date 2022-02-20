@@ -9,10 +9,13 @@ public class SetISO
     {
     }
 
-    public SetISO(string value)
+    public SetISO(string cameraId, string value)
     {
+        CameraId = cameraId;
         Value = value;
     }
+
+    public string CameraId { get; set; }
 
     public string Value { get; set; }
 }

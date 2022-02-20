@@ -5,10 +5,13 @@ namespace RemotePhotographer.Features.Photographer.Commands;
 public class StartRecording
     : Command
 {
-    public StartRecording(int fps)
+    public StartRecording(string cameraId, int fps)
     {
+        CameraId = cameraId;
         FPS = fps;
     }
 
+    public string CameraId { get; set; }
+    
     public int FPS { get; set; }
 }

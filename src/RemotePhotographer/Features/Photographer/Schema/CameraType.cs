@@ -12,22 +12,22 @@ public class CameraType
     {
         descriptor.Field("iso").Resolve(async (context, ct) =>
         {
-            var area = context.Parent<Camera>();
+            var camera = context.Parent<Camera>();
 
             ILifetimeScope lifeTimeScope = context.Service<ILifetimeScope>();
             var dispatcher = lifeTimeScope.Resolve<IQueryDispatcher>();
 
-            return await dispatcher.DispatchAsync<ISO>(new GetISO());
+            return await dispatcher.DispatchAsync<ISO>(new GetISO(camera.CameraId));
         });
 
         descriptor.Field("shutterSpeed").Resolve(async (context, ct) =>
         {
-            var area = context.Parent<Camera>();
+            var camera = context.Parent<Camera>();
 
             ILifetimeScope lifeTimeScope = context.Service<ILifetimeScope>();
             var dispatcher = lifeTimeScope.Resolve<IQueryDispatcher>();
 
-            return await dispatcher.DispatchAsync<ShutterSpeed>(new GetShutterSpeed());
+            return await dispatcher.DispatchAsync<ShutterSpeed>(new GetShutterSpeed(camera.CameraId));
         });
     }
 }

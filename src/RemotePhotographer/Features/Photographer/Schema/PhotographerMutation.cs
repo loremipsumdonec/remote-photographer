@@ -13,94 +13,87 @@ public class PhotographerMutation
         );
     }
 
-    public Task<bool> Disconnect([Service] ICommandDispatcher dispatcher) 
+    public Task<bool> Disconnect(string cameraId, [Service] ICommandDispatcher dispatcher) 
     {
         return dispatcher.DispatchAsync(
-            new DisconnectCamera()
+            new DisconnectCamera(cameraId)
         );
     }
 
-    public Task<bool> ViewFinder(bool open, [Service] ICommandDispatcher dispatcher)
+    public Task<bool> Iso(string cameraId, string value, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new SetViewFinder(open)
+            new SetISO(cameraId, value)
         );
     }
 
-    public Task<bool> Iso(string value, [Service] ICommandDispatcher dispatcher)
+    public Task<bool> ShutterSpeed(string cameraId, string value, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new SetISO(value)
+            new SetShutterSpeed(cameraId, value)
         );
     }
 
-    public Task<bool> ShutterSpeed(string value, [Service] ICommandDispatcher dispatcher)
+    public Task<bool> CaptureTarget(string cameraId, string value, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new SetShutterSpeed(value)
+            new SetCaptureTarget(cameraId, value)
         );
     }
 
-    public Task<bool> CaptureTarget(string value, [Service] ICommandDispatcher dispatcher)
+    public Task<bool> ImageFormat(string cameraId, string value, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new SetCaptureTarget(value)
+            new SetImageFormat(cameraId, value)
         );
     }
 
-    public Task<bool> ImageFormat(string value, [Service] ICommandDispatcher dispatcher)
+    public Task<bool> CaptureImage(string cameraId, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new SetImageFormat(value)
+            new CaptureImage(cameraId)
         );
     }
 
-    public Task<bool> CaptureImage([Service] ICommandDispatcher dispatcher)
+    public Task<bool> StartPreview(string cameraId, int fps, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new CaptureImage()
+            new StartPreview(cameraId, fps)
         );
     }
 
-    public Task<bool> StartPreview(int fps, [Service] ICommandDispatcher dispatcher)
+    public Task<bool> StopPreview(string cameraId, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new StartPreview(fps)
-        );
-    }
-
-    public Task<bool> StopPreview([Service] ICommandDispatcher dispatcher)
-    {
-        return dispatcher.DispatchAsync(
-            new StopPreview()
+            new StopPreview(cameraId)
         );
     }
     
-    public Task<bool> StartRecoding(int fps, [Service] ICommandDispatcher dispatcher)
+    public Task<bool> StartRecoding(string cameraId, int fps, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new StartRecording(fps)
+            new StartRecording(cameraId, fps)
         );
     }
 
-    public Task<bool> StopRecording([Service] ICommandDispatcher dispatcher)
+    public Task<bool> StopRecording(string cameraId, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new StopRecording()
+            new StopRecording(cameraId)
         );
     }
 
-    public Task<bool> StartSession(Session session, [Service] ICommandDispatcher dispatcher)
+    public Task<bool> StartSession(string cameraId, Session session, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new StartSession(session)
+            new StartSession(cameraId, session)
         );
     }
 
-    public Task<bool> StopSession([Service] ICommandDispatcher dispatcher)
+    public Task<bool> StopSession(string cameraId, [Service] ICommandDispatcher dispatcher)
     {
         return dispatcher.DispatchAsync(
-            new StopSession()
+            new StopSession(cameraId)
         );
     }
 }

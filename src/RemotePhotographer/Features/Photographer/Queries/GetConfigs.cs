@@ -6,6 +6,12 @@ namespace RemotePhotographer.Features.Photographer.Queries;
 public class GetConfigs 
     : Query
 {
+    public GetConfigs(string cameraId)
+    {
+        CameraId = cameraId;
+    }
+
+    public string CameraId { get; set; }
 }
 
 public class GetConfigsModel 

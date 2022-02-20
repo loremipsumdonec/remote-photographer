@@ -9,10 +9,13 @@ public class GetImage
     {
     }
 
-    public GetImage(string path)
+    public GetImage(string cameraId, string path)
     {
+        CameraId = cameraId;
         Path = path;
     }
+
+    public string CameraId { get; set; }
 
     public string Path { get; set; }
 }

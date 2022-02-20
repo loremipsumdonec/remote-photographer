@@ -9,10 +9,13 @@ public class SetCaptureTarget
     {
     }
 
-    public SetCaptureTarget(string value)
+    public SetCaptureTarget(string cameraId, string value)
     {
+        cameraId = cameraId;
         Value = value;
     }
+
+    public string CameraId { get; set; }
 
     public string Value { get; set; }
 }

@@ -7,6 +7,12 @@ namespace RemotePhotographer.Features.Auto.Models;
 public class StopSession
     : Command
 {
+    public StopSession(string cameraId)
+    {
+        CameraId = cameraId;
+    }
+
+    public string CameraId { get; set; }
 }
 
 [Handle(typeof(StopSession))]

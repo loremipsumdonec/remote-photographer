@@ -20,6 +20,8 @@ namespace RemotePhotographer.Features.Auto.Services
         
         private readonly IEventDispatcher _eventDispatcher;
 
+        private string _cameraId;
+
         public SessionBackgroundService(
             ICommandDispatcher commandDispatcher,
             IEventDispatcher eventDispatcher)
@@ -29,7 +31,7 @@ namespace RemotePhotographer.Features.Auto.Services
             
         }
 
-        public Task StartSessionAsync(Session session) 
+        public Task StartSessionAsync(string cameraId, Session session) 
         {
             if(_started) 
             {
@@ -38,6 +40,7 @@ namespace RemotePhotographer.Features.Auto.Services
 
             _sessionCancellationTokenSource = new();
             _session = session;
+            _cameraId = cameraId;
             _started = true;
 
             return Task.CompletedTask;
@@ -121,22 +124,22 @@ namespace RemotePhotographer.Features.Auto.Services
         {
             if(!string.IsNullOrEmpty(action.ShutterSpeed)) 
             {
-                await _commandDispatcher.DispatchAsync(new SetShutterSpeed(action.ShutterSpeed));
+                await _commandDispatcher.DispatchAsync(new SetShutterSpeed(_cameraId, action.ShutterSpeed));
             }
 
             if(!string.IsNullOrEmpty(action.ISO)) 
             {
-                await _commandDispatcher.DispatchAsync(new SetISO(action.ISO));
+                await _commandDispatcher.DispatchAsync(new SetISO(_cameraId, action.ISO));
             }
 
             if(!string.IsNullOrEmpty(action.Aperture)) 
             {
-                await _commandDispatcher.DispatchAsync(new SetAperture(action.Aperture));
+                await _commandDispatcher.DispatchAsync(new SetAperture(_cameraId, action.Aperture));
             }
 
             if(!string.IsNullOrEmpty(action.ImageFormat)) 
             {
-                await _commandDispatcher.DispatchAsync(new SetImageFormat(action.ImageFormat));
+                await _commandDispatcher.DispatchAsync(new SetImageFormat(_cameraId, action.ImageFormat));
             }
 
             for(int index = 0; index < action.Exposures; index++) 
@@ -144,7 +147,7 @@ namespace RemotePhotographer.Features.Auto.Services
                 sessionStoppingToken.ThrowIfCancellationRequested();
                 serviceStoppingToken.ThrowIfCancellationRequested();
 
-                await _commandDispatcher.DispatchAsync(new CaptureImage());
+                await _commandDispatcher.DispatchAsync(new CaptureImage(_cameraId));
             }
         }
     }
